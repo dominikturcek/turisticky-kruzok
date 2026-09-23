@@ -1,0 +1,10 @@
+{
+  "name": "turisticky-kruzok-zs-nitrianske-rudno",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "start": "swa start . --api-location api",
+    "deploy": "swa deploy . --api-location api"
+  },
+  "devDependencies": { "@azure/static-web-apps-cli": "latest" }
+}
