@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="sk">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Prihlasovanie | Turistický krúžok</title>
+</head>
+<body>
+  <p>Dokončujem prihlásenie…</p>
+  <script type="module">
+    import { broadcastResponseToMainFrame } from "@azure/msal-browser/redirect-bridge";
+
+    broadcastResponseToMainFrame().catch((error) => {
+      console.error("Error broadcasting authentication response:", error);
+    });
+  </script>
+</body>
+</html>
