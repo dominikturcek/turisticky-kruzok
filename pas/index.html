@@ -108,10 +108,10 @@ body{background:#193b2a}
 
 .authbar{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:12px;padding:10px 12px;border:1px solid rgba(255,255,255,.38);border-radius:14px;background:rgba(255,255,255,.13);backdrop-filter:blur(6px)}.authbar .authwho{min-width:0;font-size:11px;color:#fff}.authbar .authwho b{display:block;font-size:12px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.authbtn{border:0;border-radius:10px;padding:9px 11px;font-weight:900;cursor:pointer;background:#fff;color:#176b3a;white-space:nowrap}.authbtn.logout{background:rgba(255,255,255,.18);color:#fff;border:1px solid rgba(255,255,255,.45)}.autherror{display:none;margin-top:8px;padding:8px 10px;border-radius:10px;background:#fff1f1;color:#8b1e1e;font-size:11px;font-weight:700}.spdiag{display:none;margin-top:9px;padding:10px 12px;border-radius:12px;background:rgba(255,255,255,.92);color:#173427;font-size:11px;line-height:1.65}.spdiag b{display:block}.spok{color:#176b3a;font-weight:800}.spbad{color:#9b2424;font-weight:800}.spwait{color:#6f7c74;font-weight:800}</style></head><body><main class="app">
 <section id="home" class="screen on"><div class="hero"><div class="brand">🥾 TURISTICKÝ PAS</div><div class="authbar"><div class="authwho" id="authwho"><b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span></div><button class="authbtn" id="authbtn" type="button">Prihlásiť</button></div><div class="autherror" id="autherror"></div><div class="spdiag" id="spdiag"></div><div class="card" id="passportCard" style="display:none"><div class="user"><div class="avatar">🧑‍🎒</div><div><h1 id="passportName"></h1><div class="muted" id="passportMeta">sezóna 2026/2027</div></div></div>
-<div class="stats"><button class="stat" onclick="breakdown('trips')"><b>0</b><span>VÝLETOV</span></button><button class="stat" onclick="breakdown('km')"><b>0</b><span>KM</span></button><button class="stat" onclick="breakdown('m')"><b>0</b><span>M ↑</span></button><button class="stat" onclick="breakdown('pts')"><b>0</b><span>BODOV</span></button></div>
-<div class="muted">Postup sezóny · 0 %</div><div class="progress"><i style="width:0"></i></div>
-<div class="head"><h2>Moje pečiatky</h2><button class="link" onclick="show('trips')">Všetky ›</button></div><div class="stamps"><div class="stamp" onclick="detail('Rokoš')"><div class="seal">✓</div><b>Rokoš</b></div><div class="stamp" onclick="detail('Magura')"><div class="seal">✓</div><b>Magura</b></div><div class="stamp" onclick="detail('Vtáčnik')"><div class="seal">✓</div><b>Vtáčnik</b></div><div class="stamp" onclick="detail('Homôlka')"><div class="seal">✓</div><b>Homôlka</b></div></div>
-<div class="head"><h2>Moje odznaky</h2><button class="link" onclick="show('badges')">Zobraziť všetky ›</button></div><div class="badges"><div class="badge" onclick="show('badges')"><i>🥾</i><b>Prvý krok</b></div><div class="badge" onclick="show('badges')"><i>🌲</i><b>5 výletov</b></div><div class="badge" onclick="show('badges')"><i>🏔️</i><b>Prvý vrchol</b></div></div></div></div>
+<div class="stats"><button class="stat" onclick="breakdown('trips')"><b id="statTrips">0</b><span>VÝLETOV</span></button><button class="stat" onclick="breakdown('km')"><b id="statKm">0</b><span>KM</span></button><button class="stat" onclick="breakdown('m')"><b id="statElevation">0</b><span>M ↑</span></button><button class="stat" onclick="breakdown('pts')"><b id="statPoints">0</b><span>BODOV</span></button></div>
+<div class="muted" id="seasonProgressText">Postup sezóny · 0 %</div><div class="progress"><i id="seasonProgressBar" style="width:0"></i></div>
+<div class="head"><h2>Moje pečiatky</h2><button class="link" onclick="show('trips')">Všetky ›</button></div><div class="stamps" id="homeStamps"><div class="muted">Zatiaľ nemáš žiadnu pečiatku.</div></div>
+<div class="head"><h2>Moje odznaky</h2><button class="link" onclick="show('badges')">Zobraziť všetky ›</button></div><div class="badges" id="homeBadges"><div class="muted">Zatiaľ nemáš žiadny odznak.</div></div></div></div>
 <div class="club"><h1>Turistický krúžok</h1><div style="font-weight:800;color:#176b3a;font-size:12px;margin-top:2px">ZŠ Nitrianske Rudno</div><div class="muted">Výlety a informácie krúžku</div><button class="next" onclick="detail('Strážov')"><small>NAJBLIŽŠÍ VÝLET</small><h3>Strážov</h3><small>24. 10. 2026 · 11,8 km · +18 bodov</small></button>
 <div class="head"><h2>Všetky výlety</h2><button class="link" onclick="show('trips')">Zobraziť všetky ›</button></div>
 <button class="trip" onclick="detail('Rokoš')"><span class="pic">⛰️</span><span class="ti"><b>Rokoš</b><p>10. 10. 2026 · 9,4 km · +15 bodov</p></span><span class="statuspill done">✓ ABS.</span></button>
@@ -148,17 +148,78 @@ function pick(el){document.querySelectorAll('.answer').forEach(x=>x.classList.re
 window.onpopstate=()=>show('home');renderTrips();
 </script><script type="module">
 import { PublicClientApplication, BrowserCacheLocation } from "https://cdn.jsdelivr.net/npm/@azure/msal-browser@5/+esm";
-const HOME="https://dominikturcek.github.io/turisticky-kruzok/pas/",REDIRECT="https://dominikturcek.github.io/turisticky-kruzok/auth/redirect.html",DOMAIN="@zsnrudno.sk",SCOPE="Sites.ReadWrite.All";
-const msal=new PublicClientApplication({auth:{clientId:"dbe83225-f1c9-4d01-9258-a32eef290d5a",authority:"https://login.microsoftonline.com/9c407241-8886-476e-a9ec-1e588209bcff",redirectUri:REDIRECT,postLogoutRedirectUri:HOME},cache:{cacheLocation:BrowserCacheLocation.LocalStorage}});
+
+const HOME="https://dominikturcek.github.io/turisticky-kruzok/pas/";
+const REDIRECT="https://dominikturcek.github.io/turisticky-kruzok/auth/redirect.html";
+const DOMAIN="@zsnrudno.sk";
+const API_SCOPE="api://572fce68-57b5-44b8-a094-ad758a5043ad/access_as_user";
+const API_BASE="https://turisticky-kruzok-api.dominikturcek.workers.dev";
+
+const msal=new PublicClientApplication({
+  auth:{clientId:"dbe83225-f1c9-4d01-9258-a32eef290d5a",authority:"https://login.microsoftonline.com/9c407241-8886-476e-a9ec-1e588209bcff",redirectUri:REDIRECT,postLogoutRedirectUri:HOME},
+  cache:{cacheLocation:BrowserCacheLocation.LocalStorage}
+});
 await msal.initialize();
+
 const who=document.getElementById("authwho"),btn=document.getElementById("authbtn"),err=document.getElementById("autherror"),diag=document.getElementById("spdiag"),card=document.getElementById("passportCard"),pname=document.getElementById("passportName");
-const upn=a=>String(a?.username||a?.idTokenClaims?.preferred_username||"").toLowerCase(),esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const upn=a=>String(a?.username||a?.idTokenClaims?.preferred_username||"").toLowerCase();
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+const num=(v,d=0)=>Number.isFinite(Number(v))?Number(v):d;
 function error(s=""){err.textContent=s;err.style.display=s?"block":"none"}
-function showDiag(rows){diag.style.display="block";diag.innerHTML="<b>Test pripojenia</b>"+rows.map(r=>`<div class="${r.ok===true?'spok':r.ok===false?'spbad':'spwait'}">${r.ok===true?'✓':r.ok===false?'✕':'…'} ${esc(r.text)}</div>`).join("")}
-async function getJson(url,token){const r=await fetch(url,{headers:{Authorization:`Bearer ${token}`,Accept:"application/json"}});let b={};try{b=await r.json()}catch{}if(!r.ok)throw new Error(b?.error?.message||`${r.status} ${r.statusText}`);return b}
-async function token(a){try{return(await msal.acquireTokenSilent({account:a,scopes:[SCOPE]})).accessToken}catch{return(await msal.acquireTokenPopup({account:a,scopes:[SCOPE]})).accessToken}}
-async function testSP(a){const rows=[{text:"Microsoft účet prihlásený",ok:true},{text:"Graph token",ok:null},{text:"SharePoint Turistický krúžok",ok:null},{text:"Zoznam Ziaci",ok:null}];showDiag(rows);try{const t=await token(a);rows[1].ok=true;showDiag(rows);const site=await getJson("https://graph.microsoft.com/v1.0/sites/zsnrudno.sharepoint.com:/sites/Turistickykruzok?$select=id,displayName,webUrl",t);rows[2].ok=true;showDiag(rows);await getJson(`https://graph.microsoft.com/v1.0/sites/${encodeURIComponent(site.id)}/lists/Ziaci?$select=id,name,displayName,webUrl`,t);rows[3].ok=true;showDiag(rows)}catch(e){console.error(e);const i=rows.findIndex(r=>r.ok===null);if(i>=0){rows[i].ok=false;rows[i].text+=`: ${e.message}`}showDiag(rows)}}
-async function render(a){error();if(!a){card.style.display="none";diag.style.display="none";who.innerHTML="<b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span>";btn.textContent="Prihlásiť";btn.className="authbtn";btn.onclick=login;return}const u=upn(a),n=a.name||a.idTokenClaims?.name||u;who.innerHTML=`<b>${esc(n)}</b><span>${esc(u)}</span>`;btn.textContent="Odhlásiť";btn.className="authbtn logout";btn.onclick=()=>msal.logoutRedirect({account:a,postLogoutRedirectUri:HOME});pname.textContent=n;card.style.display="block";await testSP(a)}
-async function login(){error();try{const r=await msal.loginPopup({scopes:["openid","profile","email",SCOPE],prompt:"select_account"}),a=r.account,u=upn(a);if(!u.endsWith(DOMAIN)){error("Použi školský účet s adresou @zsnrudno.sk.");try{await msal.logoutPopup({account:a})}catch{}await render(null);return}msal.setActiveAccount(a);await render(a)}catch(e){console.error(e);error("Prihlásenie sa nepodarilo. Skús to znova.")}}
-const a=msal.getAllAccounts().find(x=>upn(x).endsWith(DOMAIN));if(a){msal.setActiveAccount(a);await render(a)}else await render(null);
+
+async function apiToken(a){
+  const request={account:a,scopes:[API_SCOPE]};
+  try{return (await msal.acquireTokenSilent(request)).accessToken}
+  catch{return (await msal.acquireTokenPopup(request)).accessToken}
+}
+async function apiGet(path,token){
+  const r=await fetch(API_BASE+path,{headers:{Authorization:`Bearer ${token}`,Accept:"application/json"}});
+  let b={}; try{b=await r.json()}catch{}
+  if(!r.ok) throw new Error(b?.error||b?.message||`${r.status} ${r.statusText}`);
+  return b;
+}
+function renderPassportData(data,a){
+  const user=data?.user||data?.member||data?.profile||data||{};
+  const stats=data?.stats||user?.stats||{};
+  const displayName=user.display_name||user.displayName||user.name||a.name||upn(a);
+  pname.textContent=displayName;
+  document.getElementById("passportMeta").textContent=`sezóna 2026/2027${user.class_name||user.className?` · ${user.class_name||user.className}`:""}`;
+  document.getElementById("statTrips").textContent=num(stats.trips??stats.trip_count??user.trips??user.trip_count);
+  document.getElementById("statKm").textContent=num(stats.km??stats.total_km??user.km??user.total_km).toLocaleString("sk-SK",{maximumFractionDigits:1});
+  document.getElementById("statElevation").textContent=Math.round(num(stats.elevation??stats.elevation_m??stats.total_elevation??user.elevation_m));
+  document.getElementById("statPoints").textContent=Math.round(num(stats.points??stats.total_points??user.points));
+  const progress=Math.max(0,Math.min(100,num(data?.season_progress??stats.season_progress)));
+  document.getElementById("seasonProgressText").textContent=`Postup sezóny · ${Math.round(progress)} %`;
+  document.getElementById("seasonProgressBar").style.width=`${progress}%`;
+
+  const stamps=data?.stamps||data?.completed_trips||[];
+  document.getElementById("homeStamps").innerHTML=stamps.length?stamps.slice(0,4).map(x=>{const n=typeof x==="string"?x:(x.name||x.title||"Výlet");return `<div class="stamp"><div class="seal">✓</div><b>${esc(n)}</b></div>`}).join(""):'<div class="muted">Zatiaľ nemáš žiadnu pečiatku.</div>';
+  const badges=data?.badges||data?.earned_badges||[];
+  document.getElementById("homeBadges").innerHTML=badges.length?badges.slice(0,3).map(x=>{const n=typeof x==="string"?x:(x.name||x.title||"Odznak"),icon=typeof x==="object"&&(x.icon||x.emoji)||"🏅";return `<div class="badge" onclick="show('badges')"><i>${esc(icon)}</i><b>${esc(n)}</b></div>`}).join(""):'<div class="muted">Zatiaľ nemáš žiadny odznak.</div>';
+}
+async function loadPassport(a){
+  const t=await apiToken(a);
+  const data=await apiGet("/api/me/passport",t);
+  renderPassportData(data,a);
+}
+async function render(a){
+  error(); diag.style.display="none";
+  if(!a){card.style.display="none";who.innerHTML="<b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span>";btn.textContent="Prihlásiť";btn.className="authbtn";btn.onclick=login;return}
+  const u=upn(a),n=a.name||a.idTokenClaims?.name||u;
+  who.innerHTML=`<b>${esc(n)}</b><span>${esc(u)}</span>`;
+  btn.textContent="Odhlásiť";btn.className="authbtn logout";btn.onclick=()=>msal.logoutRedirect({account:a,postLogoutRedirectUri:HOME});
+  pname.textContent=n;card.style.display="block";
+  try{await loadPassport(a)}catch(e){console.error(e);error(`Pas sa nepodarilo načítať: ${e.message}`)}
+}
+async function login(){
+  error();
+  try{
+    const r=await msal.loginPopup({scopes:["openid","profile","email"],extraScopesToConsent:[API_SCOPE],prompt:"select_account"});
+    const a=r.account,u=upn(a);
+    if(!u.endsWith(DOMAIN)){error("Použi školský účet s adresou @zsnrudno.sk.");try{await msal.logoutPopup({account:a})}catch{}await render(null);return}
+    msal.setActiveAccount(a);await render(a);
+  }catch(e){console.error(e);error("Prihlásenie sa nepodarilo. Skús to znova.")}
+}
+const a=msal.getAllAccounts().find(x=>upn(x).endsWith(DOMAIN));
+if(a){msal.setActiveAccount(a);await render(a)}else await render(null);
 </script></body></html>
