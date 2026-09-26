@@ -99,7 +99,6 @@ function statusText(v){
     completed: "ABSOLVOVANÝ"
   })[v] || v;
 }
-function statusText(v){return({planned:"PLÁNOVANÝ",current:"AKTUÁLNY",completed:"ABSOLVOVANÝ"})[v]||v}
 function render(){
 $("sPlanned").textContent=trips.filter(x=>x.status==="planned").length;$("sCurrent").textContent=trips.filter(x=>x.status==="current").length;$("sCompleted").textContent=trips.filter(x=>x.status==="completed").length;$("sAll").textContent=trips.length;
 const list=filter==="all"?trips:trips.filter(x=>x.status===filter);
