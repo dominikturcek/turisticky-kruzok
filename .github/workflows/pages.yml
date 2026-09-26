@@ -33,7 +33,18 @@ jobs:
 
       - name: Build
         run: npm run build
-
+        
+      - name: Copy static pages
+        run: |
+          mkdir -p dist/admin
+          mkdir -p dist/pas
+          mkdir -p dist/auth
+          mkdir -p dist/checkin
+          cp admin/index.html dist/admin/index.html
+          cp pas/index.html dist/pas/index.html
+          cp auth/redirect.html dist/auth/redirect.html
+          cp -r checkin/. dist/checkin/
+          
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
