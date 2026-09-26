@@ -66,9 +66,9 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
 const upn=a=>String(a?.username||a?.idTokenClaims?.preferred_username||"").toLowerCase();
 function notice(msg="",type="err"){const n=$("notice");n.textContent=msg;n.className=msg?`notice ${type}`:"notice"}
-async function apiToken(a){const req={account:a,scopes:[API_SCOPE]};try{return(await msal.acquireTokenSilent(req)).accessToken}catch{return(await msal.acquireTokenPopup(req)).accessToken}}
+async function apiToken(a){const req={account:a,scopes:[API_SCOPE]};return(await msal.acquireTokenSilent(req)).accessToken}
 async function api(path,{method="GET",body}={}){if(!token)token=await apiToken(account);const opt={method,headers:{Authorization:`Bearer ${token}`,Accept:"application/json"}};if(body!==undefined){opt.headers["Content-Type"]="application/json";opt.body=JSON.stringify(body)}const r=await fetch(API_BASE+path,opt);let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d?.message||d?.error||`${r.status} ${r.statusText}`);return d}
-async function login(){notice();try{const r=await msal.loginPopup({scopes:["openid","profile","email"],extraScopesToConsent:[API_SCOPE],prompt:"select_account"});const a=r.account;if(!upn(a).endsWith(DOMAIN)){try{await msal.logoutPopup({account:a})}catch{}throw new Error("Použi školský účet @zsnrudno.sk.")}msal.setActiveAccount(a);await start(a)}catch(e){notice("Prihlásenie: "+e.message)}}
+async function login(){notice();try{await msal.loginRedirect({scopes:["openid","profile","email",API_SCOPE],prompt:"select_account",redirectUri:REDIRECT})}catch(e){notice("Prihlásenie: "+(e?.message||String(e)))}}
 async function start(a){account=a;token=null;$("who").innerHTML=`<b>${esc(a.name||upn(a))}</b><span>${esc(upn(a))}</span>`;$("authBtn").textContent="Odhlásiť";$("authBtn").onclick=()=>msal.logoutRedirect({account:a,postLogoutRedirectUri:HOME});try{token=await apiToken(a);await loadTrips();$("lock").style.display="none";$("dashboard").style.display="block"}catch(e){$("dashboard").style.display="none";$("lock").style.display="block";notice(e.message.includes("administr")?"Tento účet nemá administrátorské oprávnenie.":e.message)}}
 async function loadTrips(){const d=await api("/api/admin/trips");trips=d.trips||[];render()}
 function fmtDate(v){if(!v)return"Bez dátumu";const[y,m,d]=v.split("-");return`${d}. ${m}. ${y}`}
@@ -84,6 +84,17 @@ $("tripForm").onsubmit=async e=>{e.preventDefault();notice();const id=$("tripId"
 $("tripGrid").onclick=async e=>{const b=e.target.closest("button");if(!b)return;try{if(b.dataset.edit){openForm(trips.find(x=>String(x.id)===b.dataset.edit));return}if(b.dataset.delete){if(!confirm("Naozaj vymazať tento plánovaný výlet?"))return;await api(`/api/admin/trips/${b.dataset.delete}`,{method:"DELETE"});await loadTrips();notice("Výlet bol vymazaný.","ok");return}if(b.dataset.current){if(!confirm("Nastaviť tento výlet ako aktuálny?"))return;await api(`/api/admin/trips/${b.dataset.current}/current`,{method:"POST"});await loadTrips();notice("Výlet je teraz aktuálny.","ok");return}if(b.dataset.complete){if(!confirm("Označiť aktuálny výlet ako absolvovaný?"))return;await api(`/api/admin/trips/${b.dataset.complete}/complete`,{method:"POST"});await loadTrips();notice("Výlet bol presunutý medzi absolvované.","ok")}}catch(err){notice(err.message)}};
 document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");filter=b.dataset.filter;render()});
 $("newTrip").onclick=()=>openForm();$("closeModal").onclick=closeForm;$("cancel").onclick=closeForm;$("modal").onclick=e=>{if(e.target===$("modal"))closeForm()};$("authBtn").onclick=login;$("loginMain").onclick=login;
-const existing=msal.getAllAccounts().find(x=>upn(x).endsWith(DOMAIN));if(existing){msal.setActiveAccount(existing);await start(existing)}
+try{
+  const redirectResult=await msal.handleRedirectPromise();
+  const returnedAccount=redirectResult?.account||null;
+  if(returnedAccount){
+    if(!upn(returnedAccount).endsWith(DOMAIN))throw new Error("Použi školský účet @zsnrudno.sk.");
+    msal.setActiveAccount(returnedAccount);
+    await start(returnedAccount);
+  }else{
+    const existing=msal.getAllAccounts().find(x=>upn(x).endsWith(DOMAIN));
+    if(existing){msal.setActiveAccount(existing);await start(existing)}
+  }
+}catch(e){notice("Prihlásenie: "+(e?.message||String(e)))}
 </script>
 </body></html>
