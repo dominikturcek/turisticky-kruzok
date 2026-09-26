@@ -73,8 +73,17 @@ async function api(path,{method="GET",body}={}){if(!token)token=await apiToken(a
 async function login(){notice();try{await msal.loginRedirect({scopes:["openid","profile","email",API_SCOPE],prompt:"select_account",redirectUri:REDIRECT})}catch(e){notice("Prihlásenie: "+(e?.message||String(e)))}}
 async function start(a){account=a;token=null;$("who").innerHTML=`<b>${esc(a.name||upn(a))}</b><span>${esc(upn(a))}</span>`;$("authBtn").textContent="Odhlásiť";$("authBtn").onclick=()=>msal.logoutRedirect({account:a,postLogoutRedirectUri:HOME});try{token=await apiToken(a);await loadTrips();$("lock").style.display="none";$("dashboard").style.display="block"}catch(e){$("dashboard").style.display="none";$("lock").style.display="block";notice(e.message.includes("administr")?"Tento účet nemá administrátorské oprávnenie.":e.message)}}
 async function loadTrips(){const d=await api("/api/admin/trips");trips=d.trips||[];render()}
-function fmtDate(v){if(!v)return"Bez dátumu";const[y,m,d]=v.split("-");return`${d}. ${m}. ${y}`}\nfunction fmtTime(t){if(!t?.time_from&&!t?.time_to)return"";if(t.time_from&&t.time_to)return` · ${t.time_from} – ${t.time_to}`;return` · ${t.time_from||t.time_to}`}
-function diff(v){return({easy:"ľahká",medium:"stredná",hard:"náročná"})[v]||"neuvedená"}
+function fmtDate(v){
+  if(!v) return "Bez dátumu";
+  const [y,m,d] = v.split("-");
+  return `${d}. ${m}. ${y}`;
+}
+
+function fmtTime(t){
+  if(!t?.time_from && !t?.time_to) return "";
+  if(t.time_from && t.time_to) return ` · ${t.time_from} – ${t.time_to}`;
+  return ` · ${t.time_from || t.time_to}`;
+}
 function statusText(v){return({planned:"PLÁNOVANÝ",current:"AKTUÁLNY",completed:"ABSOLVOVANÝ"})[v]||v}
 function render(){
 $("sPlanned").textContent=trips.filter(x=>x.status==="planned").length;$("sCurrent").textContent=trips.filter(x=>x.status==="current").length;$("sCompleted").textContent=trips.filter(x=>x.status==="completed").length;$("sAll").textContent=trips.length;
