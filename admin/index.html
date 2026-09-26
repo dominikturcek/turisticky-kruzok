@@ -84,6 +84,21 @@ function fmtTime(t){
   if(t.time_from && t.time_to) return ` · ${t.time_from} – ${t.time_to}`;
   return ` · ${t.time_from || t.time_to}`;
 }
+  function diff(v){
+  return ({
+    easy: "ľahká",
+    medium: "stredná",
+    hard: "náročná"
+  })[v] || "neuvedená";
+}
+
+function statusText(v){
+  return ({
+    planned: "PLÁNOVANÝ",
+    current: "AKTUÁLNY",
+    completed: "ABSOLVOVANÝ"
+  })[v] || v;
+}
 function statusText(v){return({planned:"PLÁNOVANÝ",current:"AKTUÁLNY",completed:"ABSOLVOVANÝ"})[v]||v}
 function render(){
 $("sPlanned").textContent=trips.filter(x=>x.status==="planned").length;$("sCurrent").textContent=trips.filter(x=>x.status==="current").length;$("sCompleted").textContent=trips.filter(x=>x.status==="completed").length;$("sAll").textContent=trips.length;
