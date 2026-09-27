@@ -1,0 +1,523 @@
+<!doctype html>
+<html lang="sk">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <title>Detail výletu | Turistický krúžok</title>
+
+  <link rel="stylesheet" href="../styles.css">
+
+  <style>
+    .trip-detail-page {
+      padding: 35px 0 60px;
+    }
+
+    .back-link {
+      display: inline-block;
+      margin-bottom: 20px;
+      color: #244d37;
+      text-decoration: none;
+      font-weight: 700;
+    }
+
+    .trip-detail-card {
+      background: white;
+      border: 1px solid #e2e7df;
+      border-radius: 14px;
+      overflow: hidden;
+      box-shadow: 0 8px 28px rgba(25,49,37,.08);
+    }
+
+    .trip-detail-image {
+      height: 380px;
+      background-size: cover;
+      background-position: center;
+      position: relative;
+    }
+
+    .trip-detail-difficulty {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background: white;
+      padding: 10px 15px;
+      border-radius: 8px;
+      font-weight: 800;
+    }
+
+    .trip-detail-content {
+      padding: 30px;
+    }
+
+    .trip-detail-content h1 {
+      margin: 0 0 10px;
+      font-size: 40px;
+    }
+
+    .trip-route {
+      color: #657269;
+      font-size: 17px;
+      margin-bottom: 25px;
+    }
+
+    .trip-data {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+      margin: 25px 0;
+    }
+
+    .trip-data div {
+      background: #f5f7f3;
+      padding: 18px;
+      border-radius: 9px;
+    }
+
+    .trip-data span {
+      display: block;
+      color: #657269;
+      font-size: 12px;
+      margin-bottom: 5px;
+    }
+
+    .trip-data strong {
+      font-size: 18px;
+    }
+
+    .trip-description {
+      margin-top: 30px;
+      line-height: 1.7;
+    }
+
+    .trip-description h2 {
+      margin-bottom: 10px;
+    }
+
+    .points-box {
+      margin-top: 25px;
+      padding: 18px;
+      background: #eef4ec;
+      border-radius: 9px;
+    }
+
+    .error {
+      background: white;
+      padding: 30px;
+      border-radius: 12px;
+    }
+
+    @media(max-width: 700px) {
+
+      .trip-detail-image {
+        height: 250px;
+      }
+
+      .trip-detail-content {
+        padding: 20px;
+      }
+
+      .trip-detail-content h1 {
+        font-size: 30px;
+      }
+
+      .trip-data {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+
+<body>
+
+<header class="hero" style="height:190px">
+
+  <nav class="nav wrap">
+
+    <a class="brand" href="../">
+
+      <span class="logo">
+        ▲<i>▲</i>
+      </span>
+
+      <span>
+        <b>TURISTICKÝ KRÚŽOK</b>
+        <small>ZÁKLADNÁ ŠKOLA NITRIANSKE RUDNO</small>
+      </span>
+
+    </a>
+
+  </nav>
+
+  <div class="tear"></div>
+
+</header>
+
+
+<main class="wrap trip-detail-page">
+
+  <a class="back-link" href="../">
+    ← Späť na výlety
+  </a>
+
+
+  <div id="tripContent">
+
+    <div class="trip-detail-card">
+
+      <div class="trip-detail-content">
+
+        <h1>Načítavam výlet…</h1>
+
+        <p>
+          Načítavam údaje z databázy.
+        </p>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</main>
+
+
+<footer>
+
+  <div class="mountains"></div>
+
+  <div class="wrap footerIn">
+
+    <div class="brand footerBrand">
+
+      <span class="logo">
+        ▲<i>▲</i>
+      </span>
+
+      <span>
+        <b>TURISTICKÝ KRÚŽOK</b>
+        <small>Základná škola Nitrianske Rudno</small>
+      </span>
+
+    </div>
+
+  </div>
+
+</footer>
+
+
+<script type="module">
+
+const API =
+  "https://turisticky-kruzok-api.dominikturcek.workers.dev/api/public/trips";
+
+const FALLBACK_IMAGE =
+  "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=88";
+
+
+const DIFFICULTY = {
+  easy: "ĽAHKÁ",
+  medium: "STREDNÁ",
+  hard: "ŤAŽKÁ"
+};
+
+
+function escapeHtml(value) {
+
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#039;");
+}
+
+
+function formatDate(value) {
+
+  if (!value) return "—";
+
+  const parts =
+    value.split("-").map(Number);
+
+  const date =
+    new Date(
+      parts[0],
+      parts[1] - 1,
+      parts[2]
+    );
+
+
+  return new Intl.DateTimeFormat(
+    "sk-SK",
+    {
+      weekday: "long",
+      day: "numeric",
+      month: "long",
+      year: "numeric"
+    }
+  ).format(date);
+}
+
+
+async function loadTrip() {
+
+  const container =
+    document.getElementById(
+      "tripContent"
+    );
+
+
+  const params =
+    new URLSearchParams(
+      window.location.search
+    );
+
+
+  const id =
+    Number(params.get("id"));
+
+
+  if (!Number.isInteger(id) || id <= 0) {
+
+    container.innerHTML = `
+      <div class="error">
+        <h2>Výlet nebol nájdený</h2>
+        <p>V adrese chýba správne ID výletu.</p>
+      </div>
+    `;
+
+    return;
+  }
+
+
+  try {
+
+    const response =
+      await fetch(API);
+
+
+    if (!response.ok) {
+
+      throw new Error(
+        "API chyba " +
+        response.status
+      );
+    }
+
+
+    const data =
+      await response.json();
+
+
+    const trip =
+      data.trips.find(
+        item =>
+          Number(item.id) === id
+      );
+
+
+    if (!trip) {
+
+      container.innerHTML = `
+        <div class="error">
+          <h2>Výlet nebol nájdený</h2>
+          <p>Požadovaný výlet sa v databáze nenachádza.</p>
+        </div>
+      `;
+
+      return;
+    }
+
+
+    document.title =
+      `${trip.name} | Turistický krúžok`;
+
+
+    const difficulty =
+      DIFFICULTY[
+        trip.difficulty
+      ] || trip.difficulty || "—";
+
+
+    const time =
+      trip.time_from &&
+      trip.time_to
+
+        ? `${trip.time_from} – ${trip.time_to}`
+
+        : trip.time_from ||
+          trip.time_to ||
+          "—";
+
+
+    container.innerHTML = `
+
+      <article class="trip-detail-card">
+
+        <div
+          class="trip-detail-image"
+          style="
+            background-image:
+            url('${escapeHtml(
+              trip.image_url ||
+              FALLBACK_IMAGE
+            )}')
+          "
+        >
+
+          <div class="trip-detail-difficulty">
+            ⛰ ${escapeHtml(difficulty)} NÁROČNOSŤ
+          </div>
+
+        </div>
+
+
+        <div class="trip-detail-content">
+
+          <h1>
+            ${escapeHtml(trip.name)}
+          </h1>
+
+
+          <div class="trip-route">
+
+            📍
+            ${escapeHtml(
+              trip.route ||
+              "Trasa bude doplnená"
+            )}
+
+          </div>
+
+
+          <div class="trip-data">
+
+            <div>
+              <span>DÁTUM</span>
+              <strong>
+                ${escapeHtml(
+                  formatDate(
+                    trip.trip_date
+                  )
+                )}
+              </strong>
+            </div>
+
+
+            <div>
+              <span>ČAS</span>
+              <strong>
+                ${escapeHtml(time)}
+              </strong>
+            </div>
+
+
+            <div>
+              <span>VZDIALENOSŤ</span>
+              <strong>
+                ${
+                  trip.distance_km ??
+                  "—"
+                } km
+              </strong>
+            </div>
+
+
+            <div>
+              <span>PREVÝŠENIE</span>
+              <strong>
+                ${
+                  trip.elevation_m ??
+                  "—"
+                } m
+              </strong>
+            </div>
+
+          </div>
+
+
+          <section class="trip-description">
+
+            <h2>O výlete</h2>
+
+            <p>
+              ${escapeHtml(
+                trip.description ||
+                "Popis výletu bude doplnený."
+              )}
+            </p>
+
+          </section>
+
+
+          <section class="trip-description">
+
+            <h2>Trasa</h2>
+
+            <p>
+              ${escapeHtml(
+                trip.route ||
+                "Trasa bude doplnená."
+              )}
+            </p>
+
+          </section>
+
+
+          <div class="points-box">
+
+            <strong>
+              🏅 ${trip.points ?? 0} bodov
+            </strong>
+
+            ${
+              Number(
+                trip.bonus_points
+              ) > 0
+
+                ? ` + ${trip.bonus_points} bonusových bodov`
+
+                : ""
+            }
+
+          </div>
+
+        </div>
+
+      </article>
+    `;
+
+  }
+
+  catch (error) {
+
+    console.error(error);
+
+
+    container.innerHTML = `
+
+      <div class="error">
+
+        <h2>
+          Výlet sa nepodarilo načítať
+        </h2>
+
+        <p>
+          Skús stránku načítať znova.
+        </p>
+
+      </div>
+    `;
+  }
+}
+
+
+loadTrip();
+
+</script>
+
+</body>
+</html>
