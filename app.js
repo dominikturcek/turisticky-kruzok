@@ -126,7 +126,21 @@ function text(id, value) {
 function renderNextTrip(trip) {
 
   if (!trip) {
+// tlačidlo VIAC INFORMÁCIÍ
 
+const detailButton =
+  document.getElementById("nextTripDetailButton");
+
+if (detailButton) {
+
+  detailButton.onclick = function () {
+
+    window.location.href =
+      `/turisticky-kruzok/vylet/?id=${trip.id}`;
+
+  };
+
+}
     text(
       "nextTripHeaderDate",
       "ĎALŠÍ VÝLET PRIPRAVUJEME"
