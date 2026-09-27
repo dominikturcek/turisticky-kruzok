@@ -1009,3 +1009,496 @@ footer {
     display: none;
   }
 }
+/* =====================================================
+   D1 VÝLETY – ROZŠÍRENIE
+   ===================================================== */
+
+[hidden] {
+  display: none !important;
+}
+
+
+/* ---------- STAV HLAVNÉHO VÝLETU ---------- */
+
+.tripStatusBadge {
+  position: absolute;
+  right: 14px;
+  top: 14px;
+
+  padding: 8px 12px;
+
+  border-radius: 999px;
+
+  background: rgba(255, 255, 255, .94);
+
+  color: var(--green);
+
+  font-size: 10px;
+  font-weight: 900;
+
+  letter-spacing: .7px;
+
+  box-shadow:
+    0 4px 12px rgba(0, 0, 0, .14);
+}
+
+.tripStatusBadge.current {
+  background: var(--green2);
+  color: #fff;
+}
+
+.tripStatusBadge.completed {
+  background: #59675e;
+  color: #fff;
+}
+
+
+/* ---------- PRÁZDNE STAVY ---------- */
+
+.emptyMessage {
+  grid-column: 1 / -1;
+
+  margin: 0;
+
+  padding: 22px 14px;
+
+  color: var(--muted);
+
+  font-size: 14px;
+}
+
+.errorMessage {
+  color: #8a3838;
+}
+
+
+/* ---------- USKUTOČNENÉ VÝLETY ---------- */
+
+.doneCards article {
+  background: #fff;
+
+  transition:
+    transform .15s ease,
+    box-shadow .15s ease,
+    border-color .15s ease;
+}
+
+.doneCards article[role="link"] {
+  cursor: pointer;
+}
+
+.doneCards article[role="link"]:hover {
+  transform: translateY(-3px);
+
+  border-color: #cbd8ca;
+
+  box-shadow:
+    0 8px 20px
+    rgba(25, 49, 37, .10);
+}
+
+.doneCards article[role="link"]:focus-visible {
+  outline:
+    3px solid
+    rgba(63, 121, 61, .30);
+
+  outline-offset: 2px;
+}
+
+.doneCards .doneDate {
+  display: block;
+
+  margin:
+    11px 12px 0;
+
+  color: #77837c;
+
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.doneCards h3 {
+  margin:
+    5px 12px 0;
+
+  font-size: 16px;
+}
+
+.doneCards p {
+  margin:
+    7px 12px 0;
+
+  color: var(--muted);
+
+  font-size: 12px;
+}
+
+
+/* =====================================================
+   DETAIL VÝLETU
+   ===================================================== */
+
+.detailHero {
+  height: 190px;
+
+  position: relative;
+
+  color: #fff;
+
+  background:
+    linear-gradient(
+      90deg,
+      rgba(9, 28, 21, .68),
+      rgba(9, 28, 21, .25)
+    ),
+    url(
+      'https://images.unsplash.com/photo-1464822759023-fed622ff2c3b?auto=format&fit=crop&w=2000&q=90'
+    )
+    center 48% / cover;
+}
+
+
+.trip-detail-page {
+  padding:
+    35px 0 60px;
+}
+
+
+.back-link {
+  display: inline-block;
+
+  margin-bottom: 20px;
+
+  color: var(--green);
+
+  text-decoration: none;
+
+  font-weight: 800;
+}
+
+
+.back-link:hover {
+  text-decoration: underline;
+}
+
+
+.trip-detail-card {
+  overflow: hidden;
+
+  background: #fff;
+
+  border:
+    1px solid var(--line);
+
+  border-radius: 14px;
+
+  box-shadow:
+    0 8px 28px
+    rgba(25, 49, 37, .08);
+}
+
+
+.trip-detail-loading,
+.trip-detail-error {
+  padding: 35px;
+}
+
+
+.trip-detail-error p {
+  margin-bottom: 24px;
+
+  color: var(--muted);
+}
+
+
+.trip-detail-image {
+  height: 400px;
+
+  position: relative;
+
+  background-size: cover;
+  background-position: center;
+}
+
+
+.trip-detail-top {
+  position: absolute;
+
+  top: 20px;
+  left: 20px;
+  right: 20px;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+
+  gap: 12px;
+}
+
+
+.trip-detail-difficulty,
+.trip-detail-status {
+  display: inline-block;
+
+  padding:
+    10px 15px;
+
+  border-radius: 8px;
+
+  background:
+    rgba(255, 255, 255, .95);
+
+  color: #23382e;
+
+  font-size: 12px;
+  font-weight: 900;
+
+  box-shadow:
+    0 4px 12px
+    rgba(0, 0, 0, .12);
+}
+
+
+.trip-detail-status {
+  letter-spacing: .5px;
+}
+
+
+.trip-detail-status.current {
+  background: var(--green2);
+  color: #fff;
+}
+
+
+.trip-detail-status.completed {
+  background: #59675e;
+  color: #fff;
+}
+
+
+.trip-detail-content {
+  padding: 30px;
+}
+
+
+.trip-detail-content h1 {
+  margin:
+    0 0 10px;
+
+  font-size: 40px;
+}
+
+
+.trip-route {
+  margin-bottom: 25px;
+
+  color: var(--muted);
+
+  font-size: 17px;
+}
+
+
+.trip-data {
+  display: grid;
+
+  grid-template-columns:
+    repeat(4, 1fr);
+
+  gap: 12px;
+
+  margin:
+    25px 0;
+}
+
+
+.trip-data > div {
+  padding: 18px;
+
+  background: #f5f7f3;
+
+  border:
+    1px solid #edf0ea;
+
+  border-radius: 9px;
+}
+
+
+.trip-data span,
+.points-box span {
+  display: block;
+
+  margin-bottom: 6px;
+
+  color: var(--muted);
+
+  font-size: 10px;
+  font-weight: 800;
+
+  letter-spacing: .6px;
+}
+
+
+.trip-data strong {
+  font-size: 17px;
+}
+
+
+.trip-detail-grid {
+  display: grid;
+
+  grid-template-columns:
+    1fr 1fr;
+
+  gap: 30px;
+
+  margin-top: 30px;
+}
+
+
+.trip-description {
+  line-height: 1.7;
+}
+
+
+.trip-description h2 {
+  margin:
+    0 0 10px;
+
+  font-size: 20px;
+}
+
+
+.trip-description p {
+  margin: 0;
+
+  color: #4d5d54;
+
+  white-space: pre-line;
+}
+
+
+.points-box {
+  display: flex;
+
+  gap: 14px;
+
+  margin-top: 30px;
+}
+
+
+.points-box > div {
+  min-width: 170px;
+
+  padding: 18px;
+
+  background: #eef4ec;
+
+  border-radius: 9px;
+}
+
+
+.points-box strong {
+  display: block;
+
+  color: var(--green);
+
+  font-size: 18px;
+}
+
+
+/* =====================================================
+   DETAIL – TABLET
+   ===================================================== */
+
+@media (max-width: 900px) {
+
+  .trip-detail-image {
+    height: 330px;
+  }
+
+  .trip-data {
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+}
+
+
+/* =====================================================
+   DETAIL – MOBIL
+   ===================================================== */
+
+@media (max-width: 620px) {
+
+  .detailHero {
+    height: 120px;
+  }
+
+  .detailHero .nav {
+    height: 78px;
+  }
+
+  .trip-detail-page {
+    padding-top: 22px;
+  }
+
+  .trip-detail-image {
+    height: 240px;
+  }
+
+  .trip-detail-top {
+    top: 12px;
+    left: 12px;
+    right: 12px;
+  }
+
+  .trip-detail-status,
+  .trip-detail-difficulty {
+    padding: 8px 10px;
+
+    font-size: 9px;
+  }
+
+  .trip-detail-content {
+    padding: 20px;
+  }
+
+  .trip-detail-content h1 {
+    font-size: 30px;
+  }
+
+  .trip-route {
+    font-size: 14px;
+  }
+
+  .trip-data {
+    grid-template-columns:
+      1fr 1fr;
+
+    gap: 8px;
+  }
+
+  .trip-data > div {
+    padding: 14px;
+  }
+
+  .trip-data strong {
+    font-size: 14px;
+  }
+
+  .trip-detail-grid {
+    grid-template-columns:
+      1fr;
+
+    gap: 25px;
+  }
+
+  .points-box {
+    flex-direction: column;
+  }
+
+  .points-box > div {
+    min-width: 0;
+  }
+
+}
