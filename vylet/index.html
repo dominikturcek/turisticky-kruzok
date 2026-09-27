@@ -2,152 +2,73 @@
 <html lang="sk">
 
 <head>
+
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <title>Detail výletu | Turistický krúžok</title>
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1"
+  >
 
-  <link rel="stylesheet" href="../styles.css">
+  <title>
+    Detail výletu | Turistický krúžok
+  </title>
 
-  <style>
-    .trip-detail-page {
-      padding: 35px 0 60px;
-    }
+  <link
+    rel="stylesheet"
+    href="../styles.css"
+  >
 
-    .back-link {
-      display: inline-block;
-      margin-bottom: 20px;
-      color: #244d37;
-      text-decoration: none;
-      font-weight: 700;
-    }
-
-    .trip-detail-card {
-      background: white;
-      border: 1px solid #e2e7df;
-      border-radius: 14px;
-      overflow: hidden;
-      box-shadow: 0 8px 28px rgba(25,49,37,.08);
-    }
-
-    .trip-detail-image {
-      height: 380px;
-      background-size: cover;
-      background-position: center;
-      position: relative;
-    }
-
-    .trip-detail-difficulty {
-      position: absolute;
-      top: 20px;
-      left: 20px;
-      background: white;
-      padding: 10px 15px;
-      border-radius: 8px;
-      font-weight: 800;
-    }
-
-    .trip-detail-content {
-      padding: 30px;
-    }
-
-    .trip-detail-content h1 {
-      margin: 0 0 10px;
-      font-size: 40px;
-    }
-
-    .trip-route {
-      color: #657269;
-      font-size: 17px;
-      margin-bottom: 25px;
-    }
-
-    .trip-data {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 12px;
-      margin: 25px 0;
-    }
-
-    .trip-data div {
-      background: #f5f7f3;
-      padding: 18px;
-      border-radius: 9px;
-    }
-
-    .trip-data span {
-      display: block;
-      color: #657269;
-      font-size: 12px;
-      margin-bottom: 5px;
-    }
-
-    .trip-data strong {
-      font-size: 18px;
-    }
-
-    .trip-description {
-      margin-top: 30px;
-      line-height: 1.7;
-    }
-
-    .trip-description h2 {
-      margin-bottom: 10px;
-    }
-
-    .points-box {
-      margin-top: 25px;
-      padding: 18px;
-      background: #eef4ec;
-      border-radius: 9px;
-    }
-
-    .error {
-      background: white;
-      padding: 30px;
-      border-radius: 12px;
-    }
-
-    @media(max-width: 700px) {
-
-      .trip-detail-image {
-        height: 250px;
-      }
-
-      .trip-detail-content {
-        padding: 20px;
-      }
-
-      .trip-detail-content h1 {
-        font-size: 30px;
-      }
-
-      .trip-data {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-  </style>
 </head>
 
 
 <body>
 
-<header class="hero" style="height:190px">
+
+<header class="detailHero">
 
   <nav class="nav wrap">
 
-    <a class="brand" href="../">
+    <a
+      class="brand"
+      href="/turisticky-kruzok/"
+    >
 
       <span class="logo">
         ▲<i>▲</i>
       </span>
 
       <span>
-        <b>TURISTICKÝ KRÚŽOK</b>
-        <small>ZÁKLADNÁ ŠKOLA NITRIANSKE RUDNO</small>
+
+        <b>
+          TURISTICKÝ KRÚŽOK
+        </b>
+
+        <small>
+          ZÁKLADNÁ ŠKOLA NITRIANSKE RUDNO
+        </small>
+
       </span>
 
     </a>
+
+
+    <div class="navlinks">
+
+      <a
+        href="/turisticky-kruzok/"
+      >
+        DOMOV
+      </a>
+
+      <a
+        class="passport"
+        href="/turisticky-kruzok/pas/"
+      >
+        👥 TURISTICKÝ PAS
+      </a>
+
+    </div>
 
   </nav>
 
@@ -158,7 +79,10 @@
 
 <main class="wrap trip-detail-page">
 
-  <a class="back-link" href="../">
+  <a
+    class="back-link"
+    href="/turisticky-kruzok/"
+  >
     ← Späť na výlety
   </a>
 
@@ -167,9 +91,11 @@
 
     <div class="trip-detail-card">
 
-      <div class="trip-detail-content">
+      <div class="trip-detail-loading">
 
-        <h1>Načítavam výlet…</h1>
+        <h1>
+          Načítavam výlet…
+        </h1>
 
         <p>
           Načítavam údaje z databázy.
@@ -197,11 +123,23 @@
       </span>
 
       <span>
-        <b>TURISTICKÝ KRÚŽOK</b>
-        <small>Základná škola Nitrianske Rudno</small>
+
+        <b>
+          TURISTICKÝ KRÚŽOK
+        </b>
+
+        <small>
+          Základná škola Nitrianske Rudno
+        </small>
+
       </span>
 
     </div>
+
+
+    <a href="/turisticky-kruzok/pas/">
+      Turistický pas →
+    </a>
 
   </div>
 
@@ -216,16 +154,24 @@ const API =
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1400&q=88";
 
-
 const DIFFICULTY = {
   easy: "ĽAHKÁ",
   medium: "STREDNÁ",
   hard: "ŤAŽKÁ"
 };
 
+const STATUS = {
+  planned: "PLÁNOVANÝ VÝLET",
+  current: "AKTUÁLNY VÝLET",
+  completed: "USKUTOČNENÝ VÝLET"
+};
+
+
+// =====================================================
+// ESCAPE HTML
+// =====================================================
 
 function escapeHtml(value) {
-
   return String(value ?? "")
     .replaceAll("&", "&amp;")
     .replaceAll("<", "&lt;")
@@ -235,12 +181,26 @@ function escapeHtml(value) {
 }
 
 
-function formatDate(value) {
+// =====================================================
+// DÁTUM
+// =====================================================
 
-  if (!value) return "—";
+function parseDate(value) {
+  if (!value) {
+    return null;
+  }
 
   const parts =
-    value.split("-").map(Number);
+    String(value)
+      .split("-")
+      .map(Number);
+
+  if (
+    parts.length !== 3 ||
+    parts.some(Number.isNaN)
+  ) {
+    return null;
+  }
 
   const date =
     new Date(
@@ -249,6 +209,25 @@ function formatDate(value) {
       parts[2]
     );
 
+  if (
+    Number.isNaN(
+      date.getTime()
+    )
+  ) {
+    return null;
+  }
+
+  return date;
+}
+
+
+function formatDate(value) {
+  const date =
+    parseDate(value);
+
+  if (!date) {
+    return "—";
+  }
 
   return new Intl.DateTimeFormat(
     "sk-SK",
@@ -262,8 +241,65 @@ function formatDate(value) {
 }
 
 
-async function loadTrip() {
+// =====================================================
+// ČAS
+// =====================================================
 
+function formatTime(trip) {
+  if (
+    trip.time_from &&
+    trip.time_to
+  ) {
+    return (
+      `${trip.time_from} – ${trip.time_to}`
+    );
+  }
+
+  return (
+    trip.time_from ||
+    trip.time_to ||
+    "—"
+  );
+}
+
+
+// =====================================================
+// CHYBA
+// =====================================================
+
+function showError(
+  container,
+  title,
+  message
+) {
+  container.innerHTML = `
+    <div class="trip-detail-error">
+
+      <h2>
+        ${escapeHtml(title)}
+      </h2>
+
+      <p>
+        ${escapeHtml(message)}
+      </p>
+
+      <a
+        class="tripDetailButton"
+        href="/turisticky-kruzok/"
+      >
+        ← Späť na hlavnú stránku
+      </a>
+
+    </div>
+  `;
+}
+
+
+// =====================================================
+// NAČÍTANIE DETAILU
+// =====================================================
+
+async function loadTrip() {
   const container =
     document.getElementById(
       "tripContent"
@@ -277,39 +313,57 @@ async function loadTrip() {
 
 
   const id =
-    Number(params.get("id"));
+    Number(
+      params.get("id")
+    );
 
 
-  if (!Number.isInteger(id) || id <= 0) {
-
-    container.innerHTML = `
-      <div class="error">
-        <h2>Výlet nebol nájdený</h2>
-        <p>V adrese chýba správne ID výletu.</p>
-      </div>
-    `;
+  if (
+    !Number.isInteger(id) ||
+    id <= 0
+  ) {
+    showError(
+      container,
+      "Výlet nebol nájdený",
+      "V adrese chýba správne ID výletu."
+    );
 
     return;
   }
 
 
   try {
-
     const response =
-      await fetch(API);
+      await fetch(
+        API,
+        {
+          headers: {
+            Accept:
+              "application/json"
+          }
+        }
+      );
 
 
     if (!response.ok) {
-
       throw new Error(
-        "API chyba " +
-        response.status
+        `API chyba ${response.status}`
       );
     }
 
 
     const data =
       await response.json();
+
+
+    if (
+      data?.ok !== true ||
+      !Array.isArray(data.trips)
+    ) {
+      throw new Error(
+        "API vrátilo neočakávaný formát dát."
+      );
+    }
 
 
     const trip =
@@ -320,56 +374,70 @@ async function loadTrip() {
 
 
     if (!trip) {
-
-      container.innerHTML = `
-        <div class="error">
-          <h2>Výlet nebol nájdený</h2>
-          <p>Požadovaný výlet sa v databáze nenachádza.</p>
-        </div>
-      `;
+      showError(
+        container,
+        "Výlet nebol nájdený",
+        "Požadovaný výlet sa v databáze nenachádza."
+      );
 
       return;
     }
 
 
     document.title =
-      `${trip.name} | Turistický krúžok`;
+      `${trip.name || "Výlet"} | Turistický krúžok`;
 
 
     const difficulty =
       DIFFICULTY[
         trip.difficulty
-      ] || trip.difficulty || "—";
+      ] ||
+      trip.difficulty ||
+      "—";
 
 
-    const time =
-      trip.time_from &&
-      trip.time_to
+    const status =
+      STATUS[
+        trip.status
+      ] ||
+      trip.status ||
+      "";
 
-        ? `${trip.time_from} – ${trip.time_to}`
 
-        : trip.time_from ||
-          trip.time_to ||
-          "—";
+    const bonus =
+      Number(
+        trip.bonus_points
+      );
 
 
     container.innerHTML = `
 
       <article class="trip-detail-card">
 
+
         <div
           class="trip-detail-image"
-          style="
-            background-image:
-            url('${escapeHtml(
-              trip.image_url ||
-              FALLBACK_IMAGE
-            )}')
-          "
+          style="background-image:url('${escapeHtml(
+            trip.image_url ||
+            FALLBACK_IMAGE
+          )}')"
         >
 
-          <div class="trip-detail-difficulty">
-            ⛰ ${escapeHtml(difficulty)} NÁROČNOSŤ
+          <div class="trip-detail-top">
+
+            <span
+              class="trip-detail-status ${escapeHtml(
+                trip.status || ""
+              )}"
+            >
+              ${escapeHtml(status)}
+            </span>
+
+
+            <span class="trip-detail-difficulty">
+              ⛰ ${escapeHtml(difficulty)}
+            </span>
+
           </div>
 
         </div>
@@ -377,26 +445,32 @@ async function loadTrip() {
 
         <div class="trip-detail-content">
 
+
           <h1>
-            ${escapeHtml(trip.name)}
+            ${escapeHtml(
+              trip.name ||
+              "Výlet"
+            )}
           </h1>
 
 
           <div class="trip-route">
-
-            📍
-            ${escapeHtml(
+            📍 ${escapeHtml(
               trip.route ||
               "Trasa bude doplnená"
             )}
-
           </div>
 
 
           <div class="trip-data">
 
+
             <div>
-              <span>DÁTUM</span>
+
+              <span>
+                DÁTUM
+              </span>
+
               <strong>
                 ${escapeHtml(
                   formatDate(
@@ -404,113 +478,162 @@ async function loadTrip() {
                   )
                 )}
               </strong>
+
             </div>
 
 
             <div>
-              <span>ČAS</span>
+
+              <span>
+                ČAS
+              </span>
+
               <strong>
-                ${escapeHtml(time)}
+                ${escapeHtml(
+                  formatTime(trip)
+                )}
               </strong>
+
             </div>
 
 
             <div>
-              <span>VZDIALENOSŤ</span>
+
+              <span>
+                VZDIALENOSŤ
+              </span>
+
               <strong>
                 ${
-                  trip.distance_km ??
-                  "—"
-                } km
+                  trip.distance_km != null
+                    ? `${escapeHtml(
+                        trip.distance_km
+                      )} km`
+                    : "—"
+                }
               </strong>
+
             </div>
 
 
             <div>
-              <span>PREVÝŠENIE</span>
+
+              <span>
+                PREVÝŠENIE
+              </span>
+
               <strong>
                 ${
-                  trip.elevation_m ??
-                  "—"
-                } m
+                  trip.elevation_m != null
+                    ? `${escapeHtml(
+                        trip.elevation_m
+                      )} m`
+                    : "—"
+                }
               </strong>
+
             </div>
+
 
           </div>
 
 
-          <section class="trip-description">
-
-            <h2>O výlete</h2>
-
-            <p>
-              ${escapeHtml(
-                trip.description ||
-                "Popis výletu bude doplnený."
-              )}
-            </p>
-
-          </section>
+          <div class="trip-detail-grid">
 
 
-          <section class="trip-description">
+            <section class="trip-description">
 
-            <h2>Trasa</h2>
+              <h2>
+                O výlete
+              </h2>
 
-            <p>
-              ${escapeHtml(
-                trip.route ||
-                "Trasa bude doplnená."
-              )}
-            </p>
+              <p>
+                ${escapeHtml(
+                  trip.description ||
+                  "Popis výletu bude doplnený."
+                )}
+              </p>
 
-          </section>
+            </section>
+
+
+            <section class="trip-description">
+
+              <h2>
+                Trasa
+              </h2>
+
+              <p>
+                ${escapeHtml(
+                  trip.route ||
+                  "Trasa bude doplnená."
+                )}
+              </p>
+
+            </section>
+
+
+          </div>
 
 
           <div class="points-box">
 
-            <strong>
-              🏅 ${trip.points ?? 0} bodov
-            </strong>
+            <div>
+
+              <span>
+                BODY ZA VÝLET
+              </span>
+
+              <strong>
+                🏅 ${
+                  trip.points ?? 0
+                } bodov
+              </strong>
+
+            </div>
+
 
             ${
-              Number(
-                trip.bonus_points
-              ) > 0
+              Number.isFinite(bonus) &&
+              bonus > 0
 
-                ? ` + ${trip.bonus_points} bonusových bodov`
+                ? `
+                  <div>
+
+                    <span>
+                      BONUS
+                    </span>
+
+                    <strong>
+                      ⭐ ${bonus} bodov
+                    </strong>
+
+                  </div>
+                `
 
                 : ""
             }
 
           </div>
 
+
         </div>
 
       </article>
     `;
-
   }
 
   catch (error) {
+    console.error(
+      "Nepodarilo sa načítať detail výletu:",
+      error
+    );
 
-    console.error(error);
-
-
-    container.innerHTML = `
-
-      <div class="error">
-
-        <h2>
-          Výlet sa nepodarilo načítať
-        </h2>
-
-        <p>
-          Skús stránku načítať znova.
-        </p>
-
-      </div>
-    `;
+    showError(
+      container,
+      "Výlet sa nepodarilo načítať",
+      "Skús stránku načítať znova."
+    );
   }
 }
 
