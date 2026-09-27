@@ -18,12 +18,12 @@
 <main class="wrap">
 <section class="topGrid">
  <article class="panel nextTrip">
-  <div class="panelHead green"><h2>🥾 &nbsp;NAJBLIŽŠÍ VÝLET</h2><strong>SO 10. OKTÓBER 2026</strong></div>
-  <div class="nextBody">
-   <div class="tripImage mainTrip"><span class="difficulty">⛰<b>STREDNÁ</b><small>NÁROČNOSŤ</small></span></div>
-   <div class="tripInfo"><h3>Rokoš</h3><p>📍 Strážovské vrchy</p><ul><li>📅 Sobota 10. októbra 2026</li><li>🕘 Cca 5 – 6 hod. (aj s cestou)</li><li>🚌 Odchod zo školy</li><li>🎒 Výbava v popise</li></ul><button onclick="toggleDetail()">VIAC INFORMÁCIÍ &nbsp; →</button><div id="detail" class="detail">Čas odchodu, miesto stretnutia, presnú trasu a výbavu doplníme pri zverejnení výletu.</div></div>
-  </div>
- </article>
+   <div class="panelHead green"><h2>🥾 &nbsp;NAJBLIŽŠÍ VÝLET</h2><strong id="nextTripHeaderDate">NAČÍTAVAM…</strong></div>
+   <div class="nextBody">
+    <div class="tripImage mainTrip" id="nextTripImage"><span class="difficulty">⛰<b id="nextTripDifficulty">—</b><small>NÁROČNOSŤ</small></span></div>
+    <div class="tripInfo"><h3 id="nextTripName">Načítavam výlet…</h3><p id="nextTripRoute">📍 —</p><ul><li id="nextTripDate">📅 —</li><li id="nextTripTime">🕘 —</li><li id="nextTripDistance">🥾 —</li><li id="nextTripElevation">↗ —</li></ul><button id="nextTripDetailButton" type="button" onclick="toggleDetail()">VIAC INFORMÁCIÍ &nbsp; →</button><div id="detail" class="detail"></div></div>
+   </div>
+  </article>
  <article class="panel progress">
   <div class="panelHead"><h2>▥ &nbsp;NAŠE POKROKY</h2></div>
   <div class="stats"><div><i>⛰</i><b>0</b><span>absolvovaných<br>výletov</span></div><div><i>⌖</i><b>0 km</b><span>spolu<br>nachodených</span></div><div><i>👥</i><b>21</b><span>členov<br>krúžku</span></div><div><i>🏅</i><b>0</b><span>získaných<br>odznakov</span></div></div>
@@ -31,13 +31,10 @@
 </section>
 <section class="panel sectionBlock">
  <div class="panelHead"><h2>▣ &nbsp;PLÁNOVANÉ VÝLETY</h2><a href="#">Zobraziť všetky &nbsp;→</a></div>
- <div class="tripCards">
-  <article><div class="cardPhoto p1"><time><b>24</b>OKT</time></div><h3>Vrch Vtáčnik</h3><p>📍 Vtáčnik</p><small>⛰ STREDNÁ NÁROČNOSŤ</small></article>
-  <article><div class="cardPhoto p2"><time><b>7</b>NOV</time></div><h3>Temešská skala</h3><p>📍 Strážovské vrchy</p><small>⛰ ĽAHKÁ NÁROČNOSŤ</small></article>
-  <article><div class="cardPhoto p3"><time><b>21</b>NOV</time></div><h3>Vyhliadkový výlet</h3><p>📍 Okolie Nitrianskeho Rudna</p><small>⛰ ĽAHKÁ NÁROČNOSŤ</small></article>
-  <article><div class="cardPhoto p4"><time><b>5</b>DEC</time></div><h3>Zimná turistika</h3><p>📍 podľa podmienok</p><small>⛰ STREDNÁ NÁROČNOSŤ</small></article>
- </div>
-</section>
+ <div class="tripCards" id="plannedTrips">
+   <p style="padding:0 14px">Načítavam plánované výlety…</p>
+  </div>
+ </section>
 <section class="panel sectionBlock done">
  <div class="panelHead"><h2>▧ &nbsp;USKUTOČNENÉ VÝLETY</h2><a href="#">Zobraziť všetky &nbsp;→</a></div>
  <div class="doneCards"><article><div class="donePhoto d1"></div><span>—</span><h3>Nová sezóna</h3></article><article><div class="donePhoto d2"></div><span>—</span><h3>Prvý výlet pripravujeme</h3></article><article><div class="donePhoto d3"></div><span>—</span><h3>Fotografie pribudnú</h3></article><article><div class="donePhoto d4"></div><span>—</span><h3>Spoločné zážitky</h3></article></div>
