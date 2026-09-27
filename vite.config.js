@@ -10,6 +10,7 @@ export default defineConfig({
         passport: resolve(__dirname, "pas/index.html"),
         admin: resolve(__dirname, "admin/index.html"),
         checkin: resolve(__dirname, "checkin/index.html"),
+        trip: resolve(__dirname, "vylet/index.html"),
         redirect: resolve(__dirname, "auth/redirect.html")
       }
     }
