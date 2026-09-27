@@ -17,20 +17,6 @@ const DIFFICULTY = {
 
 
 // =====================================================
-// DETAIL NAJBLIŽŠIEHO VÝLETU
-// =====================================================
-
-function toggleDetail() {
-  const el = document.getElementById("detail");
-
-  if (!el) return;
-
-  el.style.display =
-    el.style.display === "block" ? "none" : "block";
-}
-
-
-// =====================================================
 // DÁTUMY
 // =====================================================
 
@@ -125,22 +111,13 @@ function text(id, value) {
 
 function renderNextTrip(trip) {
 
+  const detailButton =
+    document.getElementById("nextTripDetailButton");
+
+
+  // Ak zatiaľ nemáme žiadny plánovaný výlet
   if (!trip) {
-// tlačidlo VIAC INFORMÁCIÍ
 
-const detailButton =
-  document.getElementById("nextTripDetailButton");
-
-if (detailButton) {
-
-  detailButton.onclick = function () {
-
-    window.location.href =
-      `/turisticky-kruzok/vylet/?id=${trip.id}`;
-
-  };
-
-}
     text(
       "nextTripHeaderDate",
       "ĎALŠÍ VÝLET PRIPRAVUJEME"
@@ -176,20 +153,35 @@ if (detailButton) {
       "↗ Prevýšenie bude doplnené"
     );
 
-    const button =
-      document.getElementById(
-        "nextTripDetailButton"
-      );
+    text(
+      "nextTripDifficulty",
+      "—"
+    );
 
-    if (button) {
-      button.style.display = "none";
+    if (detailButton) {
+      detailButton.style.display = "none";
     }
 
     return;
   }
 
 
-  // dátum v zelenej hlavičke
+  // =====================================================
+  // ODKAZ NA DETAIL VÝLETU
+  // =====================================================
+
+  if (detailButton) {
+
+    detailButton.style.display = "inline-block";
+
+    detailButton.href =
+      `/turisticky-kruzok/vylet/?id=${encodeURIComponent(trip.id)}`;
+  }
+
+
+  // =====================================================
+  // DÁTUM V ZELENEJ HLAVIČKE
+  // =====================================================
 
   text(
     "nextTripHeaderDate",
@@ -197,7 +189,9 @@ if (detailButton) {
   );
 
 
-  // názov
+  // =====================================================
+  // NÁZOV
+  // =====================================================
 
   text(
     "nextTripName",
@@ -205,7 +199,9 @@ if (detailButton) {
   );
 
 
-  // trasa
+  // =====================================================
+  // TRASA
+  // =====================================================
 
   text(
     "nextTripRoute",
@@ -216,7 +212,9 @@ if (detailButton) {
   );
 
 
-  // dátum
+  // =====================================================
+  // DÁTUM
+  // =====================================================
 
   text(
     "nextTripDate",
@@ -224,7 +222,9 @@ if (detailButton) {
   );
 
 
-  // čas
+  // =====================================================
+  // ČAS
+  // =====================================================
 
   let tripTime =
     "Čas bude doplnený";
@@ -239,11 +239,13 @@ if (detailButton) {
 
   } else if (trip.time_from) {
 
-    tripTime = trip.time_from;
+    tripTime =
+      trip.time_from;
 
   } else if (trip.time_to) {
 
-    tripTime = trip.time_to;
+    tripTime =
+      trip.time_to;
   }
 
 
@@ -253,7 +255,9 @@ if (detailButton) {
   );
 
 
-  // kilometre
+  // =====================================================
+  // VZDIALENOSŤ
+  // =====================================================
 
   text(
     "nextTripDistance",
@@ -265,20 +269,23 @@ if (detailButton) {
   );
 
 
-  // prevýšenie
+  // =====================================================
+  // PREVÝŠENIE
+  // =====================================================
 
   text(
     "nextTripElevation",
     `↗ ${
       trip.elevation_m != null
-        ? trip.elevation_m +
-          " m prevýšenie"
+        ? trip.elevation_m + " m prevýšenie"
         : "Prevýšenie bude doplnené"
     }`
   );
 
 
-  // náročnosť
+  // =====================================================
+  // NÁROČNOSŤ
+  // =====================================================
 
   text(
     "nextTripDifficulty",
@@ -286,12 +293,12 @@ if (detailButton) {
   );
 
 
-  // obrázok
+  // =====================================================
+  // OBRÁZOK
+  // =====================================================
 
   const image =
-    document.getElementById(
-      "nextTripImage"
-    );
+    document.getElementById("nextTripImage");
 
   if (image) {
 
@@ -300,64 +307,6 @@ if (detailButton) {
         trip.image_url ||
         FALLBACK_IMAGE
       }")`;
-  }
-
-
-  // DETAIL VÝLETU
-
-  const detail =
-    document.getElementById("detail");
-
-  if (detail) {
-
-    detail.replaceChildren();
-
-
-    // popis
-
-    if (trip.description) {
-
-      const paragraph =
-        document.createElement("p");
-
-      paragraph.textContent =
-        trip.description;
-
-      detail.appendChild(paragraph);
-    }
-
-
-    // trasa
-
-    if (trip.route) {
-
-      const paragraph =
-        document.createElement("p");
-
-      paragraph.textContent =
-        `Trasa: ${trip.route}`;
-
-      detail.appendChild(paragraph);
-    }
-
-
-    // body
-
-    const points =
-      document.createElement("p");
-
-
-    const bonus =
-      Number(trip.bonus_points) > 0
-        ? ` + ${trip.bonus_points} bonusových`
-        : "";
-
-
-    points.textContent =
-      `Body: ${trip.points ?? 0}${bonus}`;
-
-
-    detail.appendChild(points);
   }
 }
 
@@ -372,7 +321,9 @@ function tripCard(trip) {
     document.createElement("article");
 
 
-  // obrázok
+  // =====================================================
+  // OBRÁZOK
+  // =====================================================
 
   const photo =
     document.createElement("div");
@@ -387,7 +338,9 @@ function tripCard(trip) {
     }")`;
 
 
-  // dátum na obrázku
+  // =====================================================
+  // DÁTUM NA OBRÁZKU
+  // =====================================================
 
   const date =
     parseTripDate(
@@ -415,9 +368,7 @@ function tripCard(trip) {
   time.appendChild(
     document.createTextNode(
       date
-        ? MONTHS[
-            date.getMonth()
-          ]
+        ? MONTHS[date.getMonth()]
         : ""
     )
   );
@@ -426,7 +377,9 @@ function tripCard(trip) {
   photo.appendChild(time);
 
 
-  // názov
+  // =====================================================
+  // NÁZOV
+  // =====================================================
 
   const name =
     document.createElement("h3");
@@ -435,7 +388,9 @@ function tripCard(trip) {
     trip.name || "Výlet";
 
 
-  // trasa
+  // =====================================================
+  // TRASA
+  // =====================================================
 
   const route =
     document.createElement("p");
@@ -447,7 +402,9 @@ function tripCard(trip) {
     }`;
 
 
-  // náročnosť
+  // =====================================================
+  // NÁROČNOSŤ
+  // =====================================================
 
   const diff =
     document.createElement("small");
@@ -456,6 +413,54 @@ function tripCard(trip) {
     `⛰ ${difficulty(
       trip.difficulty
     )} NÁROČNOSŤ`;
+
+
+  // =====================================================
+  // CELÁ KARTA BUDE KLIKATEĽNÁ
+  // =====================================================
+
+  article.style.cursor =
+    "pointer";
+
+  article.setAttribute(
+    "role",
+    "link"
+  );
+
+  article.setAttribute(
+    "tabindex",
+    "0"
+  );
+
+
+  const openTrip = () => {
+
+    window.location.href =
+      `/turisticky-kruzok/vylet/?id=${encodeURIComponent(trip.id)}`;
+  };
+
+
+  article.addEventListener(
+    "click",
+    openTrip
+  );
+
+
+  article.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+
+        event.preventDefault();
+
+        openTrip();
+      }
+    }
+  );
 
 
   article.append(
@@ -492,12 +497,11 @@ function renderPlannedTrips(
 
 
   /*
-   * Najbližší výlet je už
-   * zobrazený vo veľkej karte.
+   * Najbližší výlet je už zobrazený
+   * vo veľkej karte.
    *
-   * Preto ho v plánovaných
-   * výletoch druhýkrát
-   * nezobrazujeme.
+   * Preto ho v sekcii plánovaných
+   * výletov druhýkrát nezobrazujeme.
    */
 
   const remaining =
@@ -583,9 +587,7 @@ async function loadTrips() {
 
     if (
       !data.ok ||
-      !Array.isArray(
-        data.trips
-      )
+      !Array.isArray(data.trips)
     ) {
 
       throw new Error(
@@ -594,14 +596,15 @@ async function loadTrips() {
     }
 
 
-    // iba plánované výlety
+    // =====================================================
+    // IBA PLÁNOVANÉ VÝLETY
+    // =====================================================
 
     const planned =
       data.trips
         .filter(
           trip =>
-            trip.status ===
-            "planned"
+            trip.status === "planned"
         )
         .sort(
           (a, b) => {
@@ -627,7 +630,9 @@ async function loadTrips() {
         );
 
 
-    // prvý podľa dátumu
+    // =====================================================
+    // NAJBLIŽŠÍ VÝLET
+    // =====================================================
 
     const nextTrip =
       planned[0] || null;
@@ -669,6 +674,18 @@ async function loadTrips() {
       "nextTripRoute",
       "📍 Skús stránku načítať znova."
     );
+
+
+    const detailButton =
+      document.getElementById(
+        "nextTripDetailButton"
+      );
+
+
+    if (detailButton) {
+      detailButton.style.display =
+        "none";
+    }
 
 
     const container =
