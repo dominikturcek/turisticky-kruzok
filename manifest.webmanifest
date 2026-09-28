@@ -9,11 +9,33 @@
   "background_color": "#193b2a",
   "theme_color": "#244d37",
   "icons": [
-    {"src":"/turisticky-kruzok/icons/web-192.png","sizes":"192x192","type":"image/png","purpose":"any"},
-    {"src":"/turisticky-kruzok/icons/web-512.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}
+    {
+      "src": "/turisticky-kruzok/icons/web-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/turisticky-kruzok/icons/web-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/turisticky-kruzok/icons/web-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ],
   "shortcuts": [
-    {"name":"Turistický pas","url":"/turisticky-kruzok/pas/"},
-    {"name":"Admin","url":"/turisticky-kruzok/admin/"}
+    {
+      "name": "Turistický pas",
+      "url": "/turisticky-kruzok/pas/"
+    },
+    {
+      "name": "Admin",
+      "url": "/turisticky-kruzok/admin/"
+    }
   ]
 }

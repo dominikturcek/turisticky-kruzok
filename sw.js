@@ -1,4 +1,4 @@
-const CACHE_NAME = "turisticky-kruzok-v2";
+const CACHE_NAME = "turisticky-kruzok-v3";
 const APP_SHELL = [
   "/turisticky-kruzok/",
   "/turisticky-kruzok/index.html",
@@ -7,6 +7,8 @@ const APP_SHELL = [
   "/turisticky-kruzok/manifest.webmanifest",
   "/turisticky-kruzok/pas/",
   "/turisticky-kruzok/pas/manifest.webmanifest",
+  "/turisticky-kruzok/icons/web-96.png",
+  "/turisticky-kruzok/icons/web-180.png",
   "/turisticky-kruzok/icons/web-192.png",
   "/turisticky-kruzok/icons/web-512.png",
   "/turisticky-kruzok/icons/pass-192.png",
