@@ -39,6 +39,7 @@ jobs:
           mkdir -p dist/pas
           mkdir -p dist/icons
 
+          cp pas/index.html dist/pas/index.html
           cp manifest.json dist/manifest.json
           cp sw.js dist/sw.js
 
