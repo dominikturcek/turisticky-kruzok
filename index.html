@@ -13,6 +13,13 @@
 
   <link rel="icon" type="image/png" sizes="96x96" href="/turisticky-kruzok/icons/web-96.png" data-pwa-icon>
   <link rel="apple-touch-icon" sizes="180x180" href="/turisticky-kruzok/icons/web-180.png" data-pwa-icon>
+<style>
+.installChoice{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:10px;font-weight:900;text-decoration:none;cursor:pointer;border:2px solid transparent;box-sizing:border-box}
+.installWeb{background:#174f35;color:#fff;border-color:#174f35}
+.installPass{background:#fff4d7;color:#6b4518;border-color:#c98a2e}
+.installChoice:hover{filter:brightness(.96)}
+@media(max-width:760px){.promoActions{display:grid;gap:9px}.installChoice{width:100%}}
+</style>
 </head>
 
 <body>
@@ -257,7 +264,11 @@
 
   <section class="passportPromo panel">
     <div><span class="promoIcon">🎒</span><div><h2>Tvoj turistický pas</h2><p>Prihlás sa školským Microsoft účtom. Zbieraj absolvované výlety, kilometre, prevýšenie, body, pečiatky a odznaky.</p></div></div>
-    <div class="promoActions"><a class="tripDetailButton" href="/turisticky-kruzok/pas/">OTVORIŤ TURISTICKÝ PAS →</a><button class="installPwa" type="button">Pridať aplikáciu do telefónu</button></div>
+    <div class="promoActions">
+      <a class="tripDetailButton" href="/turisticky-kruzok/pas/">OTVORIŤ TURISTICKÝ PAS →</a>
+      <button id="installWebPwa" class="installChoice installWeb" type="button">🌄 Pridať WEB do telefónu</button>
+      <a id="installPassFromWeb" class="installChoice installPass" href="/turisticky-kruzok/pas/?install=1#install">🎒 Pridať TURISTICKÝ PAS do telefónu</a>
+    </div>
   </section>
 
   <!-- ===================================================
@@ -364,10 +375,32 @@
 ></script>
 
 <script>
-let deferredPwaPrompt=null;
-window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPwaPrompt=e;document.querySelectorAll(".installPwa").forEach(b=>b.hidden=false)});
-document.querySelectorAll(".installPwa").forEach(b=>b.addEventListener("click",async()=>{if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;b.hidden=true}else{alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?"Na iPhone/iPad: Zdieľať → Pridať na plochu.":"V ponuke prehliadača vyber Inštalovať aplikáciu alebo Pridať na plochu.")}}));
-window.addEventListener("appinstalled",()=>document.querySelectorAll(".installPwa").forEach(b=>b.hidden=true));
+let webInstallPrompt = null;
+const installWebButton = document.getElementById("installWebPwa");
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  webInstallPrompt = event;
+});
+
+installWebButton?.addEventListener("click", async () => {
+  const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (isiOS) {
+    alert("Na iPhone/iPad otvor Zdieľať a vyber „Pridať na plochu“. Použije sa ikona WEB.");
+    return;
+  }
+  if (!webInstallPrompt) {
+    alert("Chrome momentálne neponúka inštaláciu WEB aplikácie. Ak už máš starú skratku, odstráň ju, obnov stránku a skús tlačidlo znova. Nevytváraj obyčajnú skratku cez „Pridať na plochu“.");
+    return;
+  }
+  webInstallPrompt.prompt();
+  await webInstallPrompt.userChoice;
+  webInstallPrompt = null;
+});
+
+window.addEventListener("appinstalled", () => {
+  webInstallPrompt = null;
+});
 </script>
 
 <script>
