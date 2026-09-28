@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Turistický pas</title>
+<link rel="manifest" href="/turisticky-kruzok/manifest.webmanifest"><meta name="theme-color" content="#176b3a">
 <style>
 :root{--g:#176b3a;--g2:#eaf5ee;--ink:#173427;--muted:#708078;--line:#dce7e0;--gold:#f0b429;--bg:#193b2a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,Arial,sans-serif;color:var(--ink)}
@@ -51,6 +52,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 .checkinValues span{background:#f3f7f4;border-radius:999px;padding:7px 9px;font-size:10px;font-weight:800}
 .checkinAction{width:100%;border:0;border-radius:12px;padding:12px;margin-top:12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}
 .checkinPanel.success{border:2px solid #78bd8e}.checkinPanel.success .checkinIcon{background:#dff3e6}.checkinPanel.warn{border:2px solid #e7ca68}.checkinPanel.warn .checkinIcon{background:#fff4c7}.checkinPanel.fail{border:2px solid #df9292}.checkinPanel.fail .checkinIcon{background:#ffe6e6}
+.badge.locked{filter:grayscale(1);opacity:.48}.badge.locked i{position:relative}.bonusCard{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;background:#fff}.bonusCard h3{margin:0 0 5px;font-size:14px}.bonusCard textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:9px}.bonusCard button,.installPwa{border:0;border-radius:10px;padding:10px 12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}.bonusState{font-size:10px;font-weight:900;margin-top:7px}.installPwa{width:100%;margin-top:10px;background:#fff;color:var(--g)}
 </style>
 </head>
 <body>
@@ -62,7 +64,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <div class="authwho" id="authwho"><b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span></div>
 <button class="authbtn" id="authbtn" type="button">Prihlásiť</button>
 </div>
-<div class="autherror" id="autherror"></div>
+<div class="autherror" id="autherror"></div><button class="installPwa" type="button" hidden>Pridať aplikáciu do telefónu</button>
 
 <div id="checkinPanel" class="checkinPanel">
   <div class="checkinTop">
@@ -103,22 +105,25 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <button class="tile" data-show="rank"><i>🏆</i>Rebríček</button>
 <button class="tile" data-show="rules"><i>📜</i>Pravidlá</button>
 <button class="tile" data-show="info"><i>ℹ️</i>Informácie</button>
+<button class="tile" data-show="bonus"><i>⭐</i>Bonusové úlohy</button>
 </div>
 </div>
 </section>
 
 <section id="trips" class="screen page"><h1>Všetky výlety</h1><p class="muted">Pečiatka označuje výlet, ktorý si absolvoval.</p><div id="triplist"></div></section>
-<section id="badges" class="screen page"><h1>Moje odznaky</h1><p class="muted">Odznaky získané počas turistickej sezóny.</p><div class="badge-grid" id="badgeGrid"></div></section>
+<section id="badges" class="screen page"><h1>Odznaky</h1><p class="muted">Získané odznaky sú farebné. Zamknuté ukazujú, čo ešte môžeš získať.</p><div class="badge-grid" id="badgeGrid"></div></section>
+<section id="bonus" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Bonusové úlohy</h1><p class="muted">Úlohy môžu byť samostatné alebo viazané na konkrétny výlet.</p><div id="bonusList"></div></section>
 <section id="more" class="screen page"><h1>Viac</h1><div class="box">
 <button class="trip" data-show="rank"><span class="pic">🏆</span><span class="ti"><b>Rebríček</b><p>Poradie turistov</p></span></button>
 <button class="trip" data-show="rules"><span class="pic">📜</span><span class="ti"><b>Pravidlá</b><p>Ako fungujú body a pas</p></span></button>
 <button class="trip" data-show="info"><span class="pic">ℹ️</span><span class="ti"><b>Informácie</b><p>O turistickom krúžku</p></span></button>
+<button class="trip" data-show="bonus"><span class="pic">⭐</span><span class="ti"><b>Bonusové úlohy</b><p>Získaj bonusové body</p></span></button>
 </div></section>
 <section id="detail" class="screen page"><button class="back" id="detailBack">‹ Späť</button><div id="detailbody"></div></section>
 <section id="break" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1 id="breaktitle"></h1><div class="box" id="breakbody"></div></section>
 <section id="rank" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Rebríček</h1><p class="muted">Rebríček bude napojený na databázu v ďalšej fáze.</p><div class="box"><div class="muted">Zatiaľ nie sú dostupné údaje rebríčka.</div></div></section>
 <section id="rules" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Pravidlá</h1><div class="box"><h3>Body</h3><p class="muted">Body za výlet sa pripíšu po úspešnom QR check-ine. Každý výlet sa započíta iba raz.</p></div><div class="box"><h3>Kilometre a prevýšenie</h3><p class="muted">Po zaevidovaní účasti sa do pasu automaticky započítajú kilometre, prevýšenie a body daného výletu.</p></div></section>
-<section id="info" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Informácie</h1><div class="box"><h3>Turistický krúžok</h3><p class="muted">Digitálny pas eviduje absolvované výlety, kilometre, prevýšenie, body, pečiatky a odznaky.</p></div></section>
+<section id="info" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Informácie</h1><div class="box"><h3>Turistický krúžok</h3><p class="muted">Digitálny pas eviduje absolvované výlety, kilometre, prevýšenie, body, pečiatky a odznaky.</p></div><div class="box"><h3>Kontakt</h3><p class="muted"><b>Vedúci krúžku: Dominik Turček</b><br><a href="mailto:dominikturcek@gmail.com">dominikturcek@gmail.com</a><br><a href="tel:+421902286946">0902 286 946</a> · <a href="https://wa.me/421902286946" target="_blank" rel="noopener">WhatsApp</a></p></div></section>
 </main>
 
 <nav class="nav">
@@ -178,8 +183,8 @@ async function privateApiGet(path,token){
   if(!r.ok)throw new Error(data?.message||data?.error||`${r.status} ${r.statusText}`);
   return data;
 }
-async function privateApiPost(path,token){
-  const r=await fetch(API_BASE+path,{method:"POST",headers:{Authorization:`Bearer ${token}`,Accept:"application/json","Content-Type":"application/json"}});
+async function privateApiPost(path,token,body){
+  const r=await fetch(API_BASE+path,{method:"POST",headers:{Authorization:`Bearer ${token}`,Accept:"application/json","Content-Type":"application/json"},body:body===undefined?undefined:JSON.stringify(body)});
   let data={};try{data=await r.json()}catch{}
   if(!r.ok)throw new Error(data?.message||data?.error||`${r.status} ${r.statusText}`);
   return data;
@@ -247,8 +252,10 @@ function renderPassportData(data,a){
   $("seasonProgressText").textContent=`Postup sezóny · ${progress} %`;$("seasonProgressBar").style.width=`${progress}%`;
   $("homeStamps").innerHTML=attendedTrips.length?attendedTrips.slice(0,4).map(t=>`<div class="stamp" data-trip-id="${t.id}"><div class="seal"></div><b>${esc(t.name)}</b></div>`).join(""):'<div class="muted">Zatiaľ nemáš žiadnu pečiatku.</div>';
   const badges=Array.isArray(data?.badges)?data.badges:[];
-  $("homeBadges").innerHTML=badges.length?badges.slice(0,3).map(b=>`<div class="badge" data-show="badges"><i>${esc(b.icon||"🏅")}</i><b>${esc(b.name||"Odznak")}</b></div>`).join(""):'<div class="muted">Zatiaľ nemáš žiadny odznak.</div>';
-  $("badgeGrid").innerHTML=badges.length?badges.map(b=>`<div class="badge"><i>${esc(b.icon||"🏅")}</i><b>${esc(b.name||"Odznak")}</b><span class="muted">Získaný</span></div>`).join(""):'<div class="muted" style="grid-column:1/-1">Zatiaľ nemáš žiadny odznak.</div>';
+  const earned=badges.filter(b=>Number(b.earned)===1);
+  $("homeBadges").innerHTML=earned.length?earned.slice(0,3).map(b=>`<div class="badge" data-show="badges"><i>${esc(b.icon||"🏅")}</i><b>${esc(b.name||"Odznak")}</b></div>`).join(""):'<div class="muted">Zatiaľ nemáš žiadny odznak.</div>';
+  $("badgeGrid").innerHTML=badges.length?badges.map(b=>`<div class="badge ${Number(b.earned)===1?"":"locked"}"><i>${Number(b.earned)===1?esc(b.icon||"🏅"):"🔒"}</i><b>${esc(b.name||"Odznak")}</b><span class="muted">${Number(b.earned)===1?"Získaný":esc(b.description||"Zatiaľ nezískaný")}</span></div>`).join(""):'<div class="muted" style="grid-column:1/-1">Odznaky sa nenačítali.</div>';
+  renderBonusTasks(data.bonusTasks||[]);
 }
 
 function breakdown(type){
@@ -258,6 +265,13 @@ function breakdown(type){
   if(!attendedTrips.length){$("breakbody").innerHTML='<div class="muted">Zatiaľ nemáš absolvovaný žiadny výlet.</div>';show("break");return}
   $("breakbody").innerHTML=attendedTrips.map(t=>{let v="✓";if(type==="km")v=`${formatKm(t.distance_km)} km`;if(type==="m")v=`${num(t.elevation_m)} m`;if(type==="pts")v=`+${num(t.points)} b.`;return`<div class="listrow"><span>${esc(t.name)}</span><b>${v}</b></div>`}).join("");
   show("break");
+}
+
+function renderBonusTasks(tasks){
+  const box=$("bonusList"); if(!box)return;
+  if(!tasks.length){box.innerHTML='<div class="box"><div class="muted">Momentálne nie je aktívna žiadna bonusová úloha.</div></div>';return}
+  box.innerHTML=tasks.map(t=>`<div class="bonusCard"><h3>⭐ ${esc(t.title)} · +${num(t.points)} bodov</h3><div class="muted">${t.trip_name?`Výlet: ${esc(t.trip_name)}<br>`:""}${esc(t.description)}</div>${t.status?`<div class="bonusState">${t.status==="pending"?"⏳ Čaká na vyhodnotenie":t.status==="approved"?`✓ Schválené · +${num(t.awarded_points)} bodov`:"✕ Neschválené"}</div>`:`<textarea id="bonusAnswer${t.id}" placeholder="Napíš odpoveď alebo splnenie úlohy..."></textarea><button type="button" data-bonus-submit="${t.id}">Odoslať úlohu</button>`}</div>`).join("");
+  box.querySelectorAll('[data-bonus-submit]').forEach(b=>b.onclick=async()=>{try{const id=Number(b.dataset.bonusSubmit),answer=$("bonusAnswer"+id).value.trim();if(!answer)return alert("Napíš odpoveď.");const tk=await apiToken(account);await privateApiPost(`/api/me/bonus-tasks/${id}/submit`,tk,{answer});await loadPassport(account);alert("Odpoveď bola odoslaná.")}catch(e){alert(e.message)}})
 }
 
 /* QR CHECK-IN */
@@ -374,6 +388,8 @@ try{
   $("homeTripList").innerHTML='<div class="muted">Výlety sa nepodarilo načítať.</div>';
   if(checkinToken)setCheckinPanel("fail","Stránku sa nepodarilo načítať",e.message||"Skús stránku obnoviť.");
 }
+
+let deferredPwaPrompt=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPwaPrompt=e;document.querySelectorAll(".installPwa").forEach(b=>b.hidden=false)});document.querySelectorAll(".installPwa").forEach(b=>b.addEventListener("click",async()=>{if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;b.hidden=true}else alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?"Na iPhone/iPad: Zdieľať → Pridať na plochu.":"V ponuke prehliadača vyber Inštalovať aplikáciu alebo Pridať na plochu.")}));
 </script>
 </body>
 </html>

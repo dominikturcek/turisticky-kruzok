@@ -13,6 +13,7 @@
 <title>
   Administrácia · Turistický krúžok
 </title>
+<link rel="manifest" href="/turisticky-kruzok/manifest.webmanifest"><meta name="theme-color" content="#176b3a">
 
 
 <style>
@@ -526,6 +527,8 @@ main{
   margin-top:16px;
 }
 
+.box{border:1px solid var(--line);border-radius:16px;padding:14px;background:#fff}.manageRow{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:10px 0;border-bottom:1px solid var(--line)}.manageRow:last-child{border:0}.miniActions{display:flex;gap:6px;flex-wrap:wrap}.bonusForm{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:12px 0}.bonusForm textarea{grid-column:1/-1;min-height:80px}.bonusForm input,.bonusForm select,.bonusForm textarea{border:1px solid #cddbd1;border-radius:10px;padding:9px}.bonusForm .full{grid-column:1/-1}@media(max-width:720px){.manageRow{grid-template-columns:1fr}.bonusForm{grid-template-columns:1fr}.bonusForm textarea,.bonusForm .full{grid-column:auto}}
+
 @media(max-width:720px){
   .qrbox{
     grid-template-columns:1fr;
@@ -799,6 +802,14 @@ main{
   id="tripGrid"
   class="grid"
 ></div>
+
+<div class="toolbar" style="margin-top:30px"><div><h1>Členovia a účasť</h1><div class="muted">Dodatočné pridanie alebo odobratie účasti a manuálne odznaky.</div></div></div>
+<div class="field"><label>Člen</label><select id="memberSelect"><option>Načítavam…</option></select></div>
+<div id="memberManager" class="box" style="margin-top:12px"></div>
+
+<div class="toolbar" style="margin-top:30px"><div><h1>Bonusové úlohy</h1><div class="muted">Samostatné úlohy alebo úlohy viazané na konkrétny výlet.</div></div><button class="btn primary" id="newBonus" type="button">＋ Pridať bonusovú úlohu</button></div>
+<div id="bonusAdminList"></div>
+<h2 style="font-size:17px;margin-top:24px">Odpovede na bonusové úlohy</h2><div id="bonusSubmissions"></div>
 
 
 </section>
@@ -1124,6 +1135,7 @@ main{
         <h3 id="qrTitle">
           Výlet
         </h3>
+        <div style="font-weight:900;color:#176b3a;margin:5px 0 10px">Naskenovaním si zapíšeš účasť</div>
 
         <div
           class="meta"
@@ -1463,6 +1475,7 @@ async function start(a) {
       await apiToken(a);
 
     await loadTrips();
+    await loadAdminExtras();
 
     $("lock").style.display =
       "none";
@@ -2185,6 +2198,33 @@ function printQr() {
 
 }
 
+
+
+// ============================================================
+// ČLENOVIA, ÚČASŤ, ODZNAKY, BONUSOVÉ ÚLOHY
+// ============================================================
+let adminUsersList=[],adminBadges=[],adminBonusTasks=[];
+async function loadAdminExtras(){
+  const [u,b,bt,bs]=await Promise.all([api('/api/admin/users'),api('/api/admin/badges'),api('/api/admin/bonus-tasks'),api('/api/admin/bonus-submissions')]);
+  adminUsersList=u.users||[];adminBadges=b.badges||[];adminBonusTasks=bt.tasks||[];
+  const sel=$("memberSelect");sel.innerHTML='<option value="">Vyber člena…</option>'+adminUsersList.map(x=>`<option value="${x.id}">${esc(x.display_name)}${x.class_name?` · ${esc(x.class_name)}`:""}</option>`).join('');
+  sel.onchange=()=>renderMember(Number(sel.value));renderBonusAdmin();renderBonusSubmissions(bs.submissions||[]);
+}
+async function renderMember(id){
+ const box=$("memberManager");if(!id){box.innerHTML='<div class="muted">Vyber člena.</div>';return}
+ const d=await api(`/api/admin/users/${id}`);const attended=new Set((d.trip_ids||[]).map(Number));const manual=adminBadges.filter(b=>b.badge_type==='manual');const earned=new Set((d.badges||[]).filter(b=>Number(b.earned)===1).map(b=>Number(b.id)));
+ box.innerHTML=`<h3 style="margin-top:0">${esc(d.user.display_name)}</h3><b>Účasť na výletoch</b>${trips.map(t=>`<div class="manageRow"><span>${esc(t.name)} <small class="muted">${fmtDate(t.trip_date)}</small></span><button class="btn ${attended.has(Number(t.id))?'danger':'ghost'}" data-att="${t.id}" data-action="${attended.has(Number(t.id))?'remove':'add'}">${attended.has(Number(t.id))?'− Odobrať účasť':'+ Pridať účasť'}</button></div>`).join('')}<h3>Manuálne odznaky</h3>${manual.map(b=>`<div class="manageRow"><span>${esc(b.icon||'🏅')} ${esc(b.name)}</span><button class="btn ${earned.has(Number(b.id))?'danger':'ghost'}" data-badge="${b.id}" data-action="${earned.has(Number(b.id))?'revoke':'award'}">${earned.has(Number(b.id))?'Odobrať':'Udeliť'}</button></div>`).join('')}`;
+ box.querySelectorAll('[data-att]').forEach(btn=>btn.onclick=async()=>{await api('/api/admin/attendance',{method:'POST',body:{user_id:id,trip_id:Number(btn.dataset.att),action:btn.dataset.action}});await renderMember(id)});
+ box.querySelectorAll('[data-badge]').forEach(btn=>btn.onclick=async()=>{await api('/api/admin/badges/user',{method:'POST',body:{user_id:id,badge_id:Number(btn.dataset.badge),action:btn.dataset.action}});await renderMember(id)});
+}
+function renderBonusAdmin(){
+ const box=$("bonusAdminList");box.innerHTML=adminBonusTasks.length?adminBonusTasks.map(t=>`<div class="box" style="margin-bottom:9px"><b>⭐ ${esc(t.title)} · +${Number(t.points||0)} bodov</b><div class="muted">${t.trip_name?`Výlet: ${esc(t.trip_name)} · `:'Samostatná úloha · '}${Number(t.active)===1?'Aktívna':'Neaktívna'}</div><p>${esc(t.description)}</p><button class="btn ghost" data-edit-bonus="${t.id}">Upraviť</button></div>`).join(''):'<div class="box muted">Zatiaľ nie sú vytvorené bonusové úlohy.</div>';
+ box.querySelectorAll('[data-edit-bonus]').forEach(b=>b.onclick=()=>showBonusForm(adminBonusTasks.find(x=>Number(x.id)===Number(b.dataset.editBonus))));
+}
+function showBonusForm(t=null){
+ const old=document.getElementById('bonusEditor');if(old)old.remove();const div=document.createElement('div');div.id='bonusEditor';div.className='box';div.innerHTML=`<h3>${t?'Upraviť':'Nová'} bonusová úloha</h3><div class="bonusForm"><input id="btTitle" placeholder="Názov" value="${esc(t?.title||'')}"><input id="btPoints" type="number" min="0" placeholder="Body" value="${Number(t?.points||0)}"><select id="btTrip"><option value="">Samostatná úloha</option>${trips.map(x=>`<option value="${x.id}" ${Number(t?.trip_id)===Number(x.id)?'selected':''}>${esc(x.name)}</option>`).join('')}</select><select id="btActive"><option value="1" ${Number(t?.active)!==0?'selected':''}>Aktívna</option><option value="0" ${Number(t?.active)===0?'selected':''}>Neaktívna</option></select><textarea id="btDesc" placeholder="Zadanie úlohy">${esc(t?.description||'')}</textarea><button class="btn primary full" id="btSave">Uložiť</button></div>`;$("bonusAdminList").prepend(div);$("btSave").onclick=async()=>{const body={title:$("btTitle").value.trim(),description:$("btDesc").value.trim(),points:Number($("btPoints").value||0),trip_id:$("btTrip").value?Number($("btTrip").value):null,active:Number($("btActive").value)};await api(t?`/api/admin/bonus-tasks/${t.id}`:'/api/admin/bonus-tasks',{method:t?'PUT':'POST',body});await loadAdminExtras()};
+}
+function renderBonusSubmissions(items){const box=$("bonusSubmissions");box.innerHTML=items.length?items.map(x=>`<div class="box" style="margin-bottom:9px"><b>${esc(x.display_name)} · ${esc(x.title)}</b><div class="muted">${esc(x.class_name||'')} · stav: ${esc(x.status)}</div><p>${esc(x.answer)}</p>${x.status==='pending'?`<div class="miniActions"><button class="btn primary" data-review="${x.id}" data-status="approved">✓ Schváliť +${Number(x.points||0)} b.</button><button class="btn danger" data-review="${x.id}" data-status="rejected">✕ Zamietnuť</button></div>`:''}</div>`).join(''):'<div class="box muted">Žiadne odpovede.</div>';box.querySelectorAll('[data-review]').forEach(b=>b.onclick=async()=>{await api('/api/admin/bonus-submissions/review',{method:'POST',body:{submission_id:Number(b.dataset.review),status:b.dataset.status}});await loadAdminExtras()})}
 
 // ============================================================
 // FORMULÁR

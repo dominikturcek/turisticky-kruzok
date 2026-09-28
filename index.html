@@ -8,6 +8,8 @@
   <title>Turistický krúžok | Základná škola Nitrianske Rudno</title>
 
   <link rel="stylesheet" href="styles.css">
+  <link rel="manifest" href="/turisticky-kruzok/manifest.webmanifest">
+  <meta name="theme-color" content="#244d37">
 </head>
 
 <body>
@@ -249,6 +251,12 @@
   </section>
 
 
+
+  <section class="passportPromo panel">
+    <div><span class="promoIcon">🎒</span><div><h2>Tvoj turistický pas</h2><p>Prihlás sa školským Microsoft účtom. Zbieraj absolvované výlety, kilometre, prevýšenie, body, pečiatky a odznaky.</p></div></div>
+    <div class="promoActions"><a class="tripDetailButton" href="/turisticky-kruzok/pas/">OTVORIŤ TURISTICKÝ PAS →</a><button class="installPwa" type="button" hidden>Pridať aplikáciu do telefónu</button></div>
+  </section>
+
   <!-- ===================================================
        PLÁNOVANÉ VÝLETY
        =================================================== -->
@@ -335,6 +343,9 @@
     </div>
 
 
+
+    <div class="footerContact"><b>Vedúci krúžku: Dominik Turček</b><a href="mailto:dominikturcek@gmail.com">dominikturcek@gmail.com</a><a href="tel:+421902286946">0902 286 946</a><a href="https://wa.me/421902286946" target="_blank" rel="noopener">WhatsApp</a></div>
+
     <a href="/turisticky-kruzok/pas/">
       Turistický pas →
     </a>
@@ -349,5 +360,11 @@
   src="./app.js"
 ></script>
 
+<script>
+let deferredPwaPrompt=null;
+window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPwaPrompt=e;document.querySelectorAll(".installPwa").forEach(b=>b.hidden=false)});
+document.querySelectorAll(".installPwa").forEach(b=>b.addEventListener("click",async()=>{if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;b.hidden=true}else{alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?"Na iPhone/iPad: Zdieľať → Pridať na plochu.":"V ponuke prehliadača vyber Inštalovať aplikáciu alebo Pridať na plochu.")}}));
+window.addEventListener("appinstalled",()=>document.querySelectorAll(".installPwa").forEach(b=>b.hidden=true));
+</script>
 </body>
 </html>

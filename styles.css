@@ -1502,3 +1502,8 @@ footer {
   }
 
 }
+
+
+/* Záverečné úpravy: turistický pas, kontakt, PWA */
+.passportPromo{margin:28px 0;padding:24px;display:flex;align-items:center;justify-content:space-between;gap:22px;border:2px solid #cbdccf;background:linear-gradient(135deg,#edf6ef,#fff)}
+.passportPromo>div:first-child{display:flex;align-items:center;gap:16px}.passportPromo h2{margin:0 0 6px}.passportPromo p{margin:0;color:var(--muted);max-width:690px;line-height:1.5}.promoIcon{font-size:44px}.promoActions{display:flex;gap:10px;flex-wrap:wrap}.installPwa{border:0;border-radius:7px;padding:13px 16px;background:#e6eee8;color:var(--green);font-weight:800;cursor:pointer}.footerContact{display:flex;gap:12px;align-items:center;flex-wrap:wrap;font-size:12px}.footerContact a{color:inherit}.footerContact b{width:100%}@media(max-width:720px){.passportPromo{align-items:flex-start;flex-direction:column}.footerIn{gap:18px;align-items:flex-start!important;flex-direction:column}.footerContact{flex-direction:column;align-items:flex-start}}
