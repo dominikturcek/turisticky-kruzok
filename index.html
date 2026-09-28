@@ -254,7 +254,7 @@
 
   <section class="passportPromo panel">
     <div><span class="promoIcon">🎒</span><div><h2>Tvoj turistický pas</h2><p>Prihlás sa školským Microsoft účtom. Zbieraj absolvované výlety, kilometre, prevýšenie, body, pečiatky a odznaky.</p></div></div>
-    <div class="promoActions"><a class="tripDetailButton" href="/turisticky-kruzok/pas/">OTVORIŤ TURISTICKÝ PAS →</a><button class="installPwa" type="button" hidden>Pridať aplikáciu do telefónu</button></div>
+    <div class="promoActions"><a class="tripDetailButton" href="/turisticky-kruzok/pas/">OTVORIŤ TURISTICKÝ PAS →</a><button class="installPwa" type="button">Pridať aplikáciu do telefónu</button></div>
   </section>
 
   <!-- ===================================================
@@ -365,6 +365,15 @@ let deferredPwaPrompt=null;
 window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPwaPrompt=e;document.querySelectorAll(".installPwa").forEach(b=>b.hidden=false)});
 document.querySelectorAll(".installPwa").forEach(b=>b.addEventListener("click",async()=>{if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;b.hidden=true}else{alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?"Na iPhone/iPad: Zdieľať → Pridať na plochu.":"V ponuke prehliadača vyber Inštalovať aplikáciu alebo Pridať na plochu.")}}));
 window.addEventListener("appinstalled",()=>document.querySelectorAll(".installPwa").forEach(b=>b.hidden=true));
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/turisticky-kruzok/sw.js", { scope: "/turisticky-kruzok/" })
+      .catch(err => console.error("Service worker registration failed:", err));
+  });
+}
 </script>
 </body>
 </html>
