@@ -33,7 +33,28 @@ jobs:
 
       - name: Build
         run: npm run build
-                
+
+      - name: Copy PWA files to dist
+        run: |
+          mkdir -p dist/pas
+          mkdir -p dist/icons
+
+          cp manifest.json dist/manifest.json
+          cp sw.js dist/sw.js
+
+          cp pas/manifest.json dist/pas/manifest.json
+          cp pas/sw.js dist/pas/sw.js
+
+          cp icons/web-96.png dist/icons/web-96.png
+          cp icons/web-180.png dist/icons/web-180.png
+          cp icons/web-192.png dist/icons/web-192.png
+          cp icons/web-512.png dist/icons/web-512.png
+
+          cp icons/pass-96.png dist/icons/pass-96.png
+          cp icons/pass-180.png dist/icons/pass-180.png
+          cp icons/pass-192.png dist/icons/pass-192.png
+          cp icons/pass-512.png dist/icons/pass-512.png
+
       - name: Setup Pages
         uses: actions/configure-pages@v5
 
