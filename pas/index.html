@@ -64,7 +64,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <div class="authwho" id="authwho"><b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span></div>
 <button class="authbtn" id="authbtn" type="button">Prihlásiť</button>
 </div>
-<div class="autherror" id="autherror"></div><button class="installPwa" type="button" hidden>Pridať aplikáciu do telefónu</button>
+<div class="autherror" id="autherror"></div><button class="installPwa" type="button">Pridať aplikáciu do telefónu</button>
 
 <div id="checkinPanel" class="checkinPanel">
   <div class="checkinTop">
@@ -390,6 +390,15 @@ try{
 }
 
 let deferredPwaPrompt=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPwaPrompt=e;document.querySelectorAll(".installPwa").forEach(b=>b.hidden=false)});document.querySelectorAll(".installPwa").forEach(b=>b.addEventListener("click",async()=>{if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;b.hidden=true}else alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?"Na iPhone/iPad: Zdieľať → Pridať na plochu.":"V ponuke prehliadača vyber Inštalovať aplikáciu alebo Pridať na plochu.")}));
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/turisticky-kruzok/sw.js", { scope: "/turisticky-kruzok/" })
+      .catch(err => console.error("Service worker registration failed:", err));
+  });
+}
 </script>
 </body>
 </html>
