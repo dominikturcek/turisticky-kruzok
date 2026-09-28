@@ -1,125 +1,2247 @@
 <!doctype html>
 <html lang="sk">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Administrácia · Turistický krúžok</title>
-<style>
-:root{--g:#176b3a;--g2:#eaf5ee;--ink:#173427;--muted:#6d7d74;--line:#d7e4db;--gold:#f0b429;--red:#a83232;--bg:#163726;--panel:#f7faf8}
-*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:var(--bg);color:var(--ink)}
-button,input,textarea,select{font:inherit}.shell{max-width:1180px;margin:auto;min-height:100vh;background:#fff;box-shadow:0 0 60px #0005}
-header{position:relative;overflow:hidden;padding:24px;background:linear-gradient(145deg,#123f28,#287249);color:#fff}
-header:after{content:"";position:absolute;inset:auto -5% 0;height:120px;background:#a8cfb4;opacity:.13;clip-path:polygon(0 100%,0 70%,10% 48%,20% 70%,31% 36%,42% 72%,53% 25%,64% 69%,76% 43%,86% 72%,95% 38%,100% 60%,100% 100%)}
-.top{position:relative;z-index:1;display:flex;align-items:center;justify-content:space-between;gap:16px}.brand b{font-size:20px}.brand span{display:block;font-size:12px;opacity:.82;margin-top:3px}
-.auth{position:relative;z-index:1;display:flex;align-items:center;gap:10px}.who{text-align:right;font-size:11px}.who b{display:block;font-size:12px}.btn{border:0;border-radius:11px;padding:10px 14px;font-weight:800;cursor:pointer}.btn.light{background:#fff;color:var(--g)}.btn.primary{background:var(--g);color:#fff}.btn.gold{background:var(--gold);color:#342700}.btn.ghost{background:#eef5f0;color:var(--g)}.btn.danger{background:#fff0f0;color:var(--red);border:1px solid #efcaca}.btn:disabled{opacity:.45;cursor:not-allowed}
-main{padding:22px}.notice{display:none;border-radius:12px;padding:11px 13px;margin-bottom:16px;font-size:13px;font-weight:700}.notice.err{display:block;background:#fff0f0;color:#8e2929}.notice.ok{display:block;background:#eaf7ee;color:#176b3a}
-.lock{padding:45px 20px;text-align:center}.lock h1{margin:0 0 8px}.muted{color:var(--muted);font-size:12px}
-.dashboard{display:none}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}.stat{border:1px solid var(--line);border-radius:16px;padding:15px;background:var(--panel);box-shadow:0 5px 15px #174b2c0c}.stat b{display:block;font-size:24px}.stat span{font-size:11px;color:var(--muted);font-weight:800}
-.toolbar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:18px 0}.toolbar h1{font-size:21px;margin:0}.tabs{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:14px}.tab{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 12px;font-weight:800;font-size:11px;cursor:pointer}.tab.on{background:var(--g);color:#fff;border-color:var(--g)}
-.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:13px}.trip{border:1px solid var(--line);border-radius:17px;overflow:hidden;background:#fff;box-shadow:0 5px 16px #174b2c10}.trip.current{border:2px solid var(--gold)}.tripimg{height:130px;background:linear-gradient(145deg,#dfeee4,#b8d8c3);background-size:cover;background-position:center;display:flex;align-items:flex-end;padding:11px}.pill{font-size:9px;font-weight:900;padding:6px 8px;border-radius:999px;background:#fff}.pill.current{background:#fff0ba;color:#674c00}.pill.completed{background:#e6f5eb;color:#176b3a}.tripbody{padding:14px}.tripbody h3{margin:0 0 5px}.meta{font-size:11px;color:var(--muted);line-height:1.65}.actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:12px}.actions .btn{padding:8px 10px;font-size:10px}
-.empty{grid-column:1/-1;padding:35px;text-align:center;border:1px dashed #bfd1c5;border-radius:16px;color:var(--muted)}
-.modal{display:none;position:fixed;inset:0;background:#07170fa8;z-index:20;padding:18px;overflow:auto}.modal.on{display:block}.dialog{max-width:720px;margin:20px auto;background:#fff;border-radius:20px;padding:20px;box-shadow:0 25px 70px #0007}.dialoghead{display:flex;justify-content:space-between;gap:12px;align-items:center}.dialoghead h2{margin:0}.x{border:0;background:#eef3ef;width:36px;height:36px;border-radius:50%;cursor:pointer;font-weight:900}
-.form{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:18px}.field{display:flex;flex-direction:column;gap:5px}.field.full{grid-column:1/-1}.field label{font-size:11px;font-weight:900}.field input,.field textarea,.field select{width:100%;border:1px solid #cddbd1;border-radius:10px;padding:10px;background:#fff;color:var(--ink)}.field textarea{min-height:95px;resize:vertical}.savebar{display:flex;justify-content:flex-end;gap:8px;margin-top:18px}
-@media(max-width:720px){header{padding:18px}.top{align-items:flex-start}.who{display:none}main{padding:14px}.stats{grid-template-columns:1fr 1fr}.grid{grid-template-columns:1fr}.toolbar{align-items:flex-start;flex-direction:column}.form{grid-template-columns:1fr}.field.full{grid-column:auto}.brand b{font-size:16px}}
-</style>
-</head>
-<body>
-<div class="shell">
-<header><div class="top"><div class="brand"><b>🥾 Administrácia turistického krúžku</b><span>ZŠ Nitrianske Rudno</span></div><div class="auth"><div class="who" id="who"><b>Neprihlásený</b><span>Administrátorský účet</span></div><button class="btn light" id="authBtn">Prihlásiť</button></div></div></header>
-<main>
-<div id="notice" class="notice"></div>
-<section id="lock" class="lock"><h1>Správa krúžku</h1><p class="muted">Prihlás sa školským Microsoft účtom s rolou administrátora.</p><button class="btn primary" id="loginMain">Prihlásiť cez Microsoft</button></section>
-<section id="dashboard" class="dashboard">
-<div class="stats"><div class="stat"><b id="sPlanned">0</b><span>PLÁNOVANÉ</span></div><div class="stat"><b id="sCurrent">0</b><span>AKTUÁLNY</span></div><div class="stat"><b id="sCompleted">0</b><span>ABSOLVOVANÉ</span></div><div class="stat"><b id="sAll">0</b><span>SPOLU</span></div></div>
-<div class="toolbar"><div><h1>Výlety</h1><div class="muted">Údaje z D1 pre administráciu, hlavný web aj turistický pas.</div></div><button class="btn primary" id="newTrip">＋ Pridať výlet</button></div>
-<div class="tabs"><button class="tab on" data-filter="all">Všetky</button><button class="tab" data-filter="planned">Plánované</button><button class="tab" data-filter="current">Aktuálny</button><button class="tab" data-filter="completed">Absolvované</button></div>
-<div id="tripGrid" class="grid"></div>
-</section></main></div>
 
-<div class="modal" id="modal"><div class="dialog">
-<div class="dialoghead"><h2 id="formTitle">Nový výlet</h2><button class="x" id="closeModal">×</button></div>
-<form id="tripForm"><input type="hidden" id="tripId"><div class="form">
-<div class="field full"><label>Názov *</label><input id="name" required maxlength="120" placeholder="napr. Rokoš"></div>
-<div class="field"><label>Dátum</label><input id="trip_date" type="date"></div>
-<div class="field"><label>Čas od</label><input id="time_from" type="time"></div>
-<div class="field"><label>Čas do</label><input id="time_to" type="time"></div>
-<div class="field"><label>Náročnosť</label><select id="difficulty"><option value="">—</option><option value="easy">Ľahká</option><option value="medium">Stredná</option><option value="hard">Náročná</option></select></div>
-<div class="field"><label>Dĺžka (km)</label><input id="distance_km" type="number" min="0" step="0.1" value="0"></div>
-<div class="field"><label>Prevýšenie (m)</label><input id="elevation_m" type="number" min="0" step="1" value="0"></div>
-<div class="field"><label>Body</label><input id="points" type="number" min="0" step="1" value="0"></div>
-<div class="field"><label>Bonusové body</label><input id="bonus_points" type="number" min="0" step="1" value="0"></div>
-<div class="field full"><label>Trasa</label><input id="route" placeholder="Nitrianske Rudno – ... – Nitrianske Rudno"></div>
-<div class="field full"><label>Popis</label><textarea id="description" placeholder="Informácie o výlete, výbava, odchod, návrat..."></textarea></div>
-<div class="field full"><label>URL obrázka</label><input id="image_url" type="url" placeholder="https://..."></div>
-</div><div class="savebar"><button type="button" class="btn ghost" id="cancel">Zrušiť</button><button class="btn primary" id="saveBtn" type="submit">Uložiť výlet</button></div></form>
-</div></div>
+<head>
+
+<meta charset="utf-8">
+
+<meta
+  name="viewport"
+  content="width=device-width,initial-scale=1"
+>
+
+<title>
+  Administrácia · Turistický krúžok
+</title>
+
+
+<style>
+
+:root{
+  --g:#176b3a;
+  --g2:#eaf5ee;
+  --ink:#173427;
+  --muted:#6d7d74;
+  --line:#d7e4db;
+  --gold:#f0b429;
+  --red:#a83232;
+  --bg:#163726;
+  --panel:#f7faf8;
+}
+
+*{
+  box-sizing:border-box;
+}
+
+body{
+  margin:0;
+  font-family:
+    Inter,
+    system-ui,
+    Arial,
+    sans-serif;
+  background:var(--bg);
+  color:var(--ink);
+}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+.shell{
+  max-width:1180px;
+  margin:auto;
+  min-height:100vh;
+  background:#fff;
+  box-shadow:0 0 60px #0005;
+}
+
+header{
+  position:relative;
+  overflow:hidden;
+  padding:24px;
+  background:
+    linear-gradient(
+      145deg,
+      #123f28,
+      #287249
+    );
+  color:#fff;
+}
+
+header:after{
+  content:"";
+  position:absolute;
+  inset:auto -5% 0;
+  height:120px;
+  background:#a8cfb4;
+  opacity:.13;
+  clip-path:
+    polygon(
+      0 100%,
+      0 70%,
+      10% 48%,
+      20% 70%,
+      31% 36%,
+      42% 72%,
+      53% 25%,
+      64% 69%,
+      76% 43%,
+      86% 72%,
+      95% 38%,
+      100% 60%,
+      100% 100%
+    );
+}
+
+.top{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:16px;
+}
+
+.brand b{
+  font-size:20px;
+}
+
+.brand span{
+  display:block;
+  font-size:12px;
+  opacity:.82;
+  margin-top:3px;
+}
+
+.auth{
+  position:relative;
+  z-index:1;
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+
+.who{
+  text-align:right;
+  font-size:11px;
+}
+
+.who b{
+  display:block;
+  font-size:12px;
+}
+
+.btn{
+  border:0;
+  border-radius:11px;
+  padding:10px 14px;
+  font-weight:800;
+  cursor:pointer;
+}
+
+.btn.light{
+  background:#fff;
+  color:var(--g);
+}
+
+.btn.primary{
+  background:var(--g);
+  color:#fff;
+}
+
+.btn.gold{
+  background:var(--gold);
+  color:#342700;
+}
+
+.btn.ghost{
+  background:#eef5f0;
+  color:var(--g);
+}
+
+.btn.danger{
+  background:#fff0f0;
+  color:var(--red);
+  border:1px solid #efcaca;
+}
+
+.btn:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+main{
+  padding:22px;
+}
+
+.notice{
+  display:none;
+  border-radius:12px;
+  padding:11px 13px;
+  margin-bottom:16px;
+  font-size:13px;
+  font-weight:700;
+}
+
+.notice.err{
+  display:block;
+  background:#fff0f0;
+  color:#8e2929;
+}
+
+.notice.ok{
+  display:block;
+  background:#eaf7ee;
+  color:#176b3a;
+}
+
+.lock{
+  padding:45px 20px;
+  text-align:center;
+}
+
+.lock h1{
+  margin:0 0 8px;
+}
+
+.muted{
+  color:var(--muted);
+  font-size:12px;
+}
+
+.dashboard{
+  display:none;
+}
+
+.stats{
+  display:grid;
+  grid-template-columns:
+    repeat(4,1fr);
+  gap:12px;
+  margin-bottom:20px;
+}
+
+.stat{
+  border:1px solid var(--line);
+  border-radius:16px;
+  padding:15px;
+  background:var(--panel);
+  box-shadow:
+    0 5px 15px #174b2c0c;
+}
+
+.stat b{
+  display:block;
+  font-size:24px;
+}
+
+.stat span{
+  font-size:11px;
+  color:var(--muted);
+  font-weight:800;
+}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  margin:18px 0;
+}
+
+.toolbar h1{
+  font-size:21px;
+  margin:0;
+}
+
+.tabs{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.tab{
+  border:1px solid var(--line);
+  background:#fff;
+  border-radius:999px;
+  padding:8px 12px;
+  font-weight:800;
+  font-size:11px;
+  cursor:pointer;
+}
+
+.tab.on{
+  background:var(--g);
+  color:#fff;
+  border-color:var(--g);
+}
+
+.grid{
+  display:grid;
+  grid-template-columns:
+    repeat(2,minmax(0,1fr));
+  gap:13px;
+}
+
+.trip{
+  border:1px solid var(--line);
+  border-radius:17px;
+  overflow:hidden;
+  background:#fff;
+  box-shadow:
+    0 5px 16px #174b2c10;
+}
+
+.trip.current{
+  border:2px solid var(--gold);
+}
+
+.tripimg{
+  height:130px;
+  background:
+    linear-gradient(
+      145deg,
+      #dfeee4,
+      #b8d8c3
+    );
+  background-size:cover;
+  background-position:center;
+  display:flex;
+  align-items:flex-end;
+  padding:11px;
+}
+
+.pill{
+  font-size:9px;
+  font-weight:900;
+  padding:6px 8px;
+  border-radius:999px;
+  background:#fff;
+}
+
+.pill.current{
+  background:#fff0ba;
+  color:#674c00;
+}
+
+.pill.completed{
+  background:#e6f5eb;
+  color:#176b3a;
+}
+
+.tripbody{
+  padding:14px;
+}
+
+.tripbody h3{
+  margin:0 0 5px;
+}
+
+.meta{
+  font-size:11px;
+  color:var(--muted);
+  line-height:1.65;
+}
+
+.actions{
+  display:flex;
+  gap:7px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.actions .btn{
+  padding:8px 10px;
+  font-size:10px;
+}
+
+.empty{
+  grid-column:1/-1;
+  padding:35px;
+  text-align:center;
+  border:
+    1px dashed #bfd1c5;
+  border-radius:16px;
+  color:var(--muted);
+}
+
+.modal{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:#07170fa8;
+  z-index:20;
+  padding:18px;
+  overflow:auto;
+}
+
+.modal.on{
+  display:block;
+}
+
+.dialog{
+  max-width:720px;
+  margin:20px auto;
+  background:#fff;
+  border-radius:20px;
+  padding:20px;
+  box-shadow:
+    0 25px 70px #0007;
+}
+
+.dialoghead{
+  display:flex;
+  justify-content:space-between;
+  gap:12px;
+  align-items:center;
+}
+
+.dialoghead h2{
+  margin:0;
+}
+
+.x{
+  border:0;
+  background:#eef3ef;
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  cursor:pointer;
+  font-weight:900;
+}
+
+.form{
+  display:grid;
+  grid-template-columns:
+    1fr 1fr;
+  gap:12px;
+  margin-top:18px;
+}
+
+.field{
+  display:flex;
+  flex-direction:column;
+  gap:5px;
+}
+
+.field.full{
+  grid-column:1/-1;
+}
+
+.field label{
+  font-size:11px;
+  font-weight:900;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  border:
+    1px solid #cddbd1;
+  border-radius:10px;
+  padding:10px;
+  background:#fff;
+  color:var(--ink);
+}
+
+.field textarea{
+  min-height:95px;
+  resize:vertical;
+}
+
+.savebar{
+  display:flex;
+  justify-content:flex-end;
+  gap:8px;
+  margin-top:18px;
+}
+
+
+@media(max-width:720px){
+
+  header{
+    padding:18px;
+  }
+
+  .top{
+    align-items:flex-start;
+  }
+
+  .who{
+    display:none;
+  }
+
+  main{
+    padding:14px;
+  }
+
+  .stats{
+    grid-template-columns:
+      1fr 1fr;
+  }
+
+  .grid{
+    grid-template-columns:1fr;
+  }
+
+  .toolbar{
+    align-items:flex-start;
+    flex-direction:column;
+  }
+
+  .form{
+    grid-template-columns:1fr;
+  }
+
+  .field.full{
+    grid-column:auto;
+  }
+
+  .brand b{
+    font-size:16px;
+  }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<div class="shell">
+
+<header>
+
+<div class="top">
+
+<div class="brand">
+
+<b>
+  🥾 Administrácia turistického krúžku
+</b>
+
+<span>
+  ZŠ Nitrianske Rudno
+</span>
+
+</div>
+
+
+<div class="auth">
+
+<div
+  class="who"
+  id="who"
+>
+
+<b>
+  Neprihlásený
+</b>
+
+<span>
+  Administrátorský účet
+</span>
+
+</div>
+
+
+<button
+  class="btn light"
+  id="authBtn"
+>
+  Prihlásiť
+</button>
+
+</div>
+
+</div>
+
+</header>
+
+
+<main>
+
+
+<div
+  id="notice"
+  class="notice"
+></div>
+
+
+<section
+  id="lock"
+  class="lock"
+>
+
+<h1>
+  Správa krúžku
+</h1>
+
+<p class="muted">
+  Prihlás sa školským Microsoft účtom
+  s rolou administrátora.
+</p>
+
+<button
+  class="btn primary"
+  id="loginMain"
+>
+  Prihlásiť cez Microsoft
+</button>
+
+</section>
+
+
+<section
+  id="dashboard"
+  class="dashboard"
+>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<b id="sPlanned">
+  0
+</b>
+
+<span>
+  PLÁNOVANÉ
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<b id="sCurrent">
+  0
+</b>
+
+<span>
+  AKTUÁLNY
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<b id="sCompleted">
+  0
+</b>
+
+<span>
+  ABSOLVOVANÉ
+</span>
+
+</div>
+
+
+<div class="stat">
+
+<b id="sAll">
+  0
+</b>
+
+<span>
+  SPOLU
+</span>
+
+</div>
+
+</div>
+
+
+<div class="toolbar">
+
+<div>
+
+<h1>
+  Výlety
+</h1>
+
+<div class="muted">
+  Údaje z D1 pre administráciu,
+  hlavný web aj turistický pas.
+</div>
+
+</div>
+
+
+<button
+  class="btn primary"
+  id="newTrip"
+>
+  ＋ Pridať výlet
+</button>
+
+</div>
+
+
+<div class="tabs">
+
+<button
+  class="tab on"
+  data-filter="all"
+>
+  Všetky
+</button>
+
+<button
+  class="tab"
+  data-filter="planned"
+>
+  Plánované
+</button>
+
+<button
+  class="tab"
+  data-filter="current"
+>
+  Aktuálny
+</button>
+
+<button
+  class="tab"
+  data-filter="completed"
+>
+  Absolvované
+</button>
+
+</div>
+
+
+<div
+  id="tripGrid"
+  class="grid"
+></div>
+
+
+</section>
+
+</main>
+
+</div>
+
+
+<!-- ======================================================
+     MODAL VÝLETU
+======================================================= -->
+
+<div
+  class="modal"
+  id="modal"
+>
+
+<div class="dialog">
+
+
+<div class="dialoghead">
+
+<h2 id="formTitle">
+  Nový výlet
+</h2>
+
+<button
+  class="x"
+  id="closeModal"
+  type="button"
+>
+  ×
+</button>
+
+</div>
+
+
+<form id="tripForm">
+
+
+<input
+  type="hidden"
+  id="tripId"
+>
+
+
+<div class="form">
+
+
+<div class="field full">
+
+<label>
+  Názov *
+</label>
+
+<input
+  id="name"
+  required
+  maxlength="120"
+  placeholder="napr. Rokoš"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Dátum
+</label>
+
+<input
+  id="trip_date"
+  type="date"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Čas od
+</label>
+
+<input
+  id="time_from"
+  type="time"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Čas do
+</label>
+
+<input
+  id="time_to"
+  type="time"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Náročnosť
+</label>
+
+<select id="difficulty">
+
+<option value="">
+  —
+</option>
+
+<option value="easy">
+  Ľahká
+</option>
+
+<option value="medium">
+  Stredná
+</option>
+
+<option value="hard">
+  Náročná
+</option>
+
+</select>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Dĺžka (km)
+</label>
+
+<input
+  id="distance_km"
+  type="number"
+  min="0"
+  step="0.1"
+  value="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Prevýšenie (m)
+</label>
+
+<input
+  id="elevation_m"
+  type="number"
+  min="0"
+  step="1"
+  value="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Body
+</label>
+
+<input
+  id="points"
+  type="number"
+  min="0"
+  step="1"
+  value="0"
+>
+
+</div>
+
+
+<div class="field">
+
+<label>
+  Bonusové body
+</label>
+
+<input
+  id="bonus_points"
+  type="number"
+  min="0"
+  step="1"
+  value="0"
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+  Trasa
+</label>
+
+<input
+  id="route"
+  placeholder="Nitrianske Rudno – ... – Nitrianske Rudno"
+>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+  Popis
+</label>
+
+<textarea
+  id="description"
+  placeholder="Informácie o výlete, výbava, odchod, návrat..."
+></textarea>
+
+</div>
+
+
+<div class="field full">
+
+<label>
+  URL obrázka
+</label>
+
+<input
+  id="image_url"
+  type="url"
+  placeholder="https://..."
+>
+
+</div>
+
+
+</div>
+
+
+<div class="savebar">
+
+<button
+  type="button"
+  class="btn ghost"
+  id="cancel"
+>
+  Zrušiť
+</button>
+
+<button
+  class="btn primary"
+  id="saveBtn"
+  type="submit"
+>
+  Uložiť výlet
+</button>
+
+</div>
+
+
+</form>
+
+</div>
+
+</div>
+
 
 <script type="module">
-import { PublicClientApplication, BrowserCacheLocation } from "https://cdn.jsdelivr.net/npm/@azure/msal-browser@5/+esm";
-const HOME="https://dominikturcek.github.io/turisticky-kruzok/admin/";
-const REDIRECT="https://dominikturcek.github.io/turisticky-kruzok/auth/redirect.html";
-const DOMAIN="@zsnrudno.sk";
-const API_SCOPE="api://572fce68-57b5-44b8-a094-ad758a5043ad/access_as_user";
-const API_BASE="https://turisticky-kruzok-api.dominikturcek.workers.dev";
-const msal=new PublicClientApplication({auth:{clientId:"dbe83225-f1c9-4d01-9258-a32eef290d5a",authority:"https://login.microsoftonline.com/9c407241-8886-476e-a9ec-1e588209bcff",redirectUri:REDIRECT,postLogoutRedirectUri:HOME},cache:{cacheLocation:BrowserCacheLocation.LocalStorage}});
+
+
+import {
+  PublicClientApplication,
+  BrowserCacheLocation
+}
+from
+"https://cdn.jsdelivr.net/npm/@azure/msal-browser@5/+esm";
+
+
+// ============================================================
+// KONFIGURÁCIA
+// ============================================================
+
+const HOME =
+  "https://dominikturcek.github.io/turisticky-kruzok/admin/";
+
+const REDIRECT =
+  "https://dominikturcek.github.io/turisticky-kruzok/auth/redirect.html";
+
+const DOMAIN =
+  "@zsnrudno.sk";
+
+const API_SCOPE =
+  "api://572fce68-57b5-44b8-a094-ad758a5043ad/access_as_user";
+
+const API_BASE =
+  "https://turisticky-kruzok-api.dominikturcek.workers.dev";
+
+
+const msal =
+  new PublicClientApplication({
+
+    auth:{
+      clientId:
+        "dbe83225-f1c9-4d01-9258-a32eef290d5a",
+
+      authority:
+        "https://login.microsoftonline.com/9c407241-8886-476e-a9ec-1e588209bcff",
+
+      redirectUri:
+        REDIRECT,
+
+      postLogoutRedirectUri:
+        HOME
+    },
+
+    cache:{
+      cacheLocation:
+        BrowserCacheLocation.LocalStorage
+    }
+
+  });
+
+
 await msal.initialize();
-let account=null,token=null,trips=[],filter="all";
-const $=id=>document.getElementById(id);
-const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
-const upn=a=>String(a?.username||a?.idTokenClaims?.preferred_username||"").toLowerCase();
-function notice(msg="",type="err"){const n=$("notice");n.textContent=msg;n.className=msg?`notice ${type}`:"notice"}
-async function apiToken(a){const req={account:a,scopes:[API_SCOPE]};return(await msal.acquireTokenSilent(req)).accessToken}
-async function api(path,{method="GET",body}={}){if(!token)token=await apiToken(account);const opt={method,headers:{Authorization:`Bearer ${token}`,Accept:"application/json"}};if(body!==undefined){opt.headers["Content-Type"]="application/json";opt.body=JSON.stringify(body)}const r=await fetch(API_BASE+path,opt);let d={};try{d=await r.json()}catch{}if(!r.ok)throw new Error(d?.message||d?.error||`${r.status} ${r.statusText}`);return d}
-async function login(){notice();try{await msal.loginRedirect({scopes:["openid","profile","email",API_SCOPE],prompt:"select_account",redirectUri:REDIRECT})}catch(e){notice("Prihlásenie: "+(e?.message||String(e)))}}
-async function start(a){account=a;token=null;$("who").innerHTML=`<b>${esc(a.name||upn(a))}</b><span>${esc(upn(a))}</span>`;$("authBtn").textContent="Odhlásiť";$("authBtn").onclick=()=>msal.logoutRedirect({account:a,postLogoutRedirectUri:HOME});try{token=await apiToken(a);await loadTrips();$("lock").style.display="none";$("dashboard").style.display="block"}catch(e){$("dashboard").style.display="none";$("lock").style.display="block";notice(e.message.includes("administr")?"Tento účet nemá administrátorské oprávnenie.":e.message)}}
-async function loadTrips(){const d=await api("/api/admin/trips");trips=d.trips||[];render()}
-function fmtDate(v){
-  if(!v) return "Bez dátumu";
-  const [y,m,d] = v.split("-");
+
+
+// ============================================================
+// STAV
+// ============================================================
+
+let account = null;
+let token = null;
+let trips = [];
+let filter = "all";
+
+
+const $ =
+  id => document.getElementById(id);
+
+
+const esc =
+  s => String(s ?? "")
+    .replace(
+      /[&<>"']/g,
+      c => ({
+        "&":"&amp;",
+        "<":"&lt;",
+        ">":"&gt;",
+        '"':"&quot;",
+        "'":"&#039;"
+      })[c]
+    );
+
+
+const upn =
+  a => String(
+    a?.username ||
+    a?.idTokenClaims
+      ?.preferred_username ||
+    ""
+  ).toLowerCase();
+
+
+// ============================================================
+// OZNÁMENIA
+// ============================================================
+
+function notice(
+  msg = "",
+  type = "err"
+) {
+
+  const n =
+    $("notice");
+
+  n.textContent =
+    msg;
+
+  n.className =
+    msg
+      ? `notice ${type}`
+      : "notice";
+}
+
+
+// ============================================================
+// API
+// ============================================================
+
+async function apiToken(a) {
+
+  const req = {
+    account:a,
+    scopes:[API_SCOPE]
+  };
+
+  return (
+    await msal.acquireTokenSilent(req)
+  ).accessToken;
+}
+
+
+async function api(
+  path,
+  {
+    method = "GET",
+    body
+  } = {}
+) {
+
+  if (!token) {
+    token =
+      await apiToken(account);
+  }
+
+
+  const opt = {
+
+    method,
+
+    headers:{
+      Authorization:
+        `Bearer ${token}`,
+
+      Accept:
+        "application/json"
+    }
+
+  };
+
+
+  if (body !== undefined) {
+
+    opt.headers[
+      "Content-Type"
+    ] = "application/json";
+
+    opt.body =
+      JSON.stringify(body);
+
+  }
+
+
+  const r =
+    await fetch(
+      API_BASE + path,
+      opt
+    );
+
+
+  let d = {};
+
+  try {
+    d = await r.json();
+  } catch {}
+
+
+  if (!r.ok) {
+
+    throw new Error(
+      d?.message ||
+      d?.error ||
+      `${r.status} ${r.statusText}`
+    );
+
+  }
+
+
+  return d;
+}
+
+
+// ============================================================
+// PRIHLÁSENIE
+// ============================================================
+
+async function login() {
+
+  notice();
+
+  try {
+
+    await msal.loginRedirect({
+
+      scopes:[
+        "openid",
+        "profile",
+        "email",
+        API_SCOPE
+      ],
+
+      prompt:
+        "select_account",
+
+      redirectUri:
+        REDIRECT
+
+    });
+
+  } catch(e) {
+
+    notice(
+      "Prihlásenie: " +
+      (
+        e?.message ||
+        String(e)
+      )
+    );
+
+  }
+}
+
+
+async function start(a) {
+
+  account = a;
+  token = null;
+
+
+  $("who").innerHTML =
+    `
+      <b>
+        ${esc(a.name || upn(a))}
+      </b>
+
+      <span>
+        ${esc(upn(a))}
+      </span>
+    `;
+
+
+  $("authBtn").textContent =
+    "Odhlásiť";
+
+
+  $("authBtn").onclick =
+    () =>
+      msal.logoutRedirect({
+        account:a,
+        postLogoutRedirectUri:
+          HOME
+      });
+
+
+  try {
+
+    token =
+      await apiToken(a);
+
+    await loadTrips();
+
+    $("lock").style.display =
+      "none";
+
+    $("dashboard").style.display =
+      "block";
+
+  } catch(e) {
+
+    $("dashboard").style.display =
+      "none";
+
+    $("lock").style.display =
+      "block";
+
+
+    notice(
+      e.message.includes("administr")
+        ? "Tento účet nemá administrátorské oprávnenie."
+        : e.message
+    );
+
+  }
+
+}
+
+
+// ============================================================
+// VÝLETY
+// ============================================================
+
+async function loadTrips() {
+
+  const d =
+    await api(
+      "/api/admin/trips"
+    );
+
+  trips =
+    d.trips || [];
+
+  render();
+}
+
+
+function fmtDate(v) {
+
+  if (!v) {
+    return "Bez dátumu";
+  }
+
+  const [y,m,d] =
+    v.split("-");
+
   return `${d}. ${m}. ${y}`;
 }
 
-function fmtTime(t){
-  if(!t?.time_from && !t?.time_to) return "";
-  if(t.time_from && t.time_to) return ` · ${t.time_from} – ${t.time_to}`;
-  return ` · ${t.time_from || t.time_to}`;
-}
-  function diff(v){
-  return ({
-    easy: "ľahká",
-    medium: "stredná",
-    hard: "náročná"
-  })[v] || "neuvedená";
+
+function fmtTime(t) {
+
+  if (
+    !t?.time_from &&
+    !t?.time_to
+  ) {
+    return "";
+  }
+
+  if (
+    t.time_from &&
+    t.time_to
+  ) {
+    return (
+      ` · ${t.time_from} – ${t.time_to}`
+    );
+  }
+
+  return (
+    ` · ${t.time_from || t.time_to}`
+  );
 }
 
-function statusText(v){
+
+function diff(v) {
+
   return ({
-    planned: "PLÁNOVANÝ",
-    current: "AKTUÁLNY",
-    completed: "ABSOLVOVANÝ"
-  })[v] || v;
+    easy:"ľahká",
+    medium:"stredná",
+    hard:"náročná"
+  })[v] || "neuvedená";
+
 }
-function render(){
-$("sPlanned").textContent=trips.filter(x=>x.status==="planned").length;$("sCurrent").textContent=trips.filter(x=>x.status==="current").length;$("sCompleted").textContent=trips.filter(x=>x.status==="completed").length;$("sAll").textContent=trips.length;
-const list=filter==="all"?trips:trips.filter(x=>x.status===filter);
-$("tripGrid").innerHTML=list.length?list.map(t=>{let actions="";if(t.status==="planned")actions=`<button class="btn ghost" data-edit="${t.id}">Upraviť</button><button class="btn gold" data-current="${t.id}">Nastaviť aktuálny</button><button class="btn danger" data-delete="${t.id}">Vymazať</button>`;if(t.status==="current")actions=`<button class="btn primary" data-complete="${t.id}">Označiť ako absolvovaný</button>`;const bg=t.image_url?`background-image:linear-gradient(0deg,#0006,#0000),url(&quot;${esc(t.image_url)}&quot;)`:"";return`<article class="trip ${esc(t.status)}"><div class="tripimg" style="${bg}"><span class="pill ${esc(t.status)}">${esc(statusText(t.status))}</span></div><div class="tripbody"><h3>${esc(t.name)}</h3><div class="meta">${esc(fmtDate(t.trip_date))}${esc(fmtTime(t))} · ${Number(t.distance_km||0).toLocaleString("sk-SK")} km · ↑ ${Number(t.elevation_m||0)} m<br>${esc(diff(t.difficulty))} · ${Number(t.points||0)} bodov${Number(t.bonus_points||0)?` + ${Number(t.bonus_points)} bonus`:""}${t.route?`<br>${esc(t.route)}`:""}</div><div class="actions">${actions}</div></div></article>`}).join(""):`<div class="empty">V tejto kategórii zatiaľ nie sú žiadne výlety.</div>`}
-function openForm(t=null){$("tripForm").reset();$("tripId").value=t?.id||"";$("formTitle").textContent=t?"Upraviť výlet":"Nový výlet";$("name").value=t?.name||"";$("trip_date").value=t?.trip_date||"";$("time_from").value=t?.time_from||"";$("time_to").value=t?.time_to||"";$("difficulty").value=t?.difficulty||"";$("distance_km").value=t?.distance_km??0;$("elevation_m").value=t?.elevation_m??0;$("points").value=t?.points??0;$("bonus_points").value=t?.bonus_points??0;$("route").value=t?.route||"";$("description").value=t?.description||"";$("image_url").value=t?.image_url||"";$("modal").classList.add("on")}
-function closeForm(){$("modal").classList.remove("on")}
-$("tripForm").onsubmit=async e=>{e.preventDefault();notice();const id=$("tripId").value;const body={name:$("name").value.trim(),trip_date:$("trip_date").value||null,time_from:$("time_from").value||null,time_to:$("time_to").value||null,difficulty:$("difficulty").value||null,distance_km:Number($("distance_km").value||0),elevation_m:Number($("elevation_m").value||0),points:Number($("points").value||0),bonus_points:Number($("bonus_points").value||0),route:$("route").value.trim()||null,description:$("description").value.trim()||null,image_url:$("image_url").value.trim()||null};$("saveBtn").disabled=true;try{await api(id?`/api/admin/trips/${id}`:"/api/admin/trips",{method:id?"PUT":"POST",body});closeForm();await loadTrips();notice(id?"Výlet bol upravený.":"Výlet bol vytvorený.","ok")}catch(e){notice(e.message)}finally{$("saveBtn").disabled=false}};
-$("tripGrid").onclick=async e=>{const b=e.target.closest("button");if(!b)return;try{if(b.dataset.edit){openForm(trips.find(x=>String(x.id)===b.dataset.edit));return}if(b.dataset.delete){if(!confirm("Naozaj vymazať tento plánovaný výlet?"))return;await api(`/api/admin/trips/${b.dataset.delete}`,{method:"DELETE"});await loadTrips();notice("Výlet bol vymazaný.","ok");return}if(b.dataset.current){if(!confirm("Nastaviť tento výlet ako aktuálny?"))return;await api(`/api/admin/trips/${b.dataset.current}/current`,{method:"POST"});await loadTrips();notice("Výlet je teraz aktuálny.","ok");return}if(b.dataset.complete){if(!confirm("Označiť aktuálny výlet ako absolvovaný?"))return;await api(`/api/admin/trips/${b.dataset.complete}/complete`,{method:"POST"});await loadTrips();notice("Výlet bol presunutý medzi absolvované.","ok")}}catch(err){notice(err.message)}};
-document.querySelectorAll(".tab").forEach(b=>b.onclick=()=>{document.querySelectorAll(".tab").forEach(x=>x.classList.remove("on"));b.classList.add("on");filter=b.dataset.filter;render()});
-$("newTrip").onclick=()=>openForm();$("closeModal").onclick=closeForm;$("cancel").onclick=closeForm;$("modal").onclick=e=>{if(e.target===$("modal"))closeForm()};$("authBtn").onclick=login;$("loginMain").onclick=login;
-try{
-  const redirectResult=await msal.handleRedirectPromise();
-  const returnedAccount=redirectResult?.account||null;
-  if(returnedAccount){
-    if(!upn(returnedAccount).endsWith(DOMAIN))throw new Error("Použi školský účet @zsnrudno.sk.");
-    msal.setActiveAccount(returnedAccount);
-    await start(returnedAccount);
-  }else{
-    const existing=msal.getAllAccounts().find(x=>upn(x).endsWith(DOMAIN));
-    if(existing){msal.setActiveAccount(existing);await start(existing)}
+
+
+function statusText(v) {
+
+  return ({
+    planned:"PLÁNOVANÝ",
+    current:"AKTUÁLNY",
+    completed:"ABSOLVOVANÝ"
+  })[v] || v;
+
+}
+
+
+// ============================================================
+// RENDER
+// ============================================================
+
+function render() {
+
+  $("sPlanned").textContent =
+    trips.filter(
+      x => x.status === "planned"
+    ).length;
+
+
+  $("sCurrent").textContent =
+    trips.filter(
+      x => x.status === "current"
+    ).length;
+
+
+  $("sCompleted").textContent =
+    trips.filter(
+      x => x.status === "completed"
+    ).length;
+
+
+  $("sAll").textContent =
+    trips.length;
+
+
+  const list =
+    filter === "all"
+      ? trips
+      : trips.filter(
+          x => x.status === filter
+        );
+
+
+  $("tripGrid").innerHTML =
+    list.length
+
+    ? list.map(t => {
+
+        let actions = "";
+
+
+        // PLÁNOVANÝ
+
+        if (
+          t.status === "planned"
+        ) {
+
+          actions = `
+
+            <button
+              class="btn ghost"
+              data-edit="${t.id}"
+            >
+              Upraviť
+            </button>
+
+            <button
+              class="btn gold"
+              data-current="${t.id}"
+            >
+              Nastaviť aktuálny
+            </button>
+
+            <button
+              class="btn danger"
+              data-delete="${t.id}"
+            >
+              Vymazať
+            </button>
+
+          `;
+
+        }
+
+
+        // AKTUÁLNY
+
+        if (
+          t.status === "current"
+        ) {
+
+          actions = `
+
+            <button
+              class="btn ghost"
+              data-edit="${t.id}"
+            >
+              Upraviť
+            </button>
+
+            <button
+              class="btn primary"
+              data-complete="${t.id}"
+            >
+              Označiť ako absolvovaný
+            </button>
+
+            <button
+              class="btn ghost"
+              data-planned="${t.id}"
+            >
+              ↩ Vrátiť do plánovaných
+            </button>
+
+          `;
+
+        }
+
+
+        // ABSOLVOVANÝ
+
+        if (
+          t.status === "completed"
+        ) {
+
+          actions = `
+
+            <button
+              class="btn ghost"
+              data-edit="${t.id}"
+            >
+              Upraviť
+            </button>
+
+            <button
+              class="btn ghost"
+              data-planned="${t.id}"
+            >
+              ↩ Vrátiť do plánovaných
+            </button>
+
+            <button
+              class="btn danger"
+              data-delete="${t.id}"
+            >
+              Vymazať
+            </button>
+
+          `;
+
+        }
+
+
+        const bg =
+          t.image_url
+
+          ? `background-image:
+             linear-gradient(
+               0deg,
+               #0006,
+               #0000
+             ),
+             url(&quot;${esc(t.image_url)}&quot;)`
+
+          : "";
+
+
+        return `
+
+          <article
+            class="trip ${esc(t.status)}"
+          >
+
+            <div
+              class="tripimg"
+              style="${bg}"
+            >
+
+              <span
+                class="pill ${esc(t.status)}"
+              >
+                ${esc(
+                  statusText(t.status)
+                )}
+              </span>
+
+            </div>
+
+
+            <div class="tripbody">
+
+              <h3>
+                ${esc(t.name)}
+              </h3>
+
+
+              <div class="meta">
+
+                ${esc(
+                  fmtDate(t.trip_date)
+                )}
+
+                ${esc(
+                  fmtTime(t)
+                )}
+
+                ·
+                ${Number(
+                  t.distance_km || 0
+                ).toLocaleString(
+                  "sk-SK"
+                )}
+                km
+
+                · ↑
+                ${Number(
+                  t.elevation_m || 0
+                )}
+                m
+
+                <br>
+
+                ${esc(
+                  diff(t.difficulty)
+                )}
+
+                ·
+                ${Number(
+                  t.points || 0
+                )}
+                bodov
+
+
+                ${
+                  Number(
+                    t.bonus_points || 0
+                  )
+
+                  ? ` + ${Number(
+                      t.bonus_points
+                    )} bonus`
+
+                  : ""
+                }
+
+
+                ${
+                  t.route
+
+                  ? `<br>${esc(
+                      t.route
+                    )}`
+
+                  : ""
+                }
+
+              </div>
+
+
+              <div class="actions">
+
+                ${actions}
+
+              </div>
+
+            </div>
+
+          </article>
+
+        `;
+
+      }).join("")
+
+    : `
+
+        <div class="empty">
+
+          V tejto kategórii zatiaľ
+          nie sú žiadne výlety.
+
+        </div>
+
+      `;
+
+}
+
+
+// ============================================================
+// FORMULÁR
+// ============================================================
+
+function openForm(t = null) {
+
+  $("tripForm").reset();
+
+  $("tripId").value =
+    t?.id || "";
+
+  $("formTitle").textContent =
+    t
+      ? "Upraviť výlet"
+      : "Nový výlet";
+
+
+  $("name").value =
+    t?.name || "";
+
+  $("trip_date").value =
+    t?.trip_date || "";
+
+  $("time_from").value =
+    t?.time_from || "";
+
+  $("time_to").value =
+    t?.time_to || "";
+
+  $("difficulty").value =
+    t?.difficulty || "";
+
+  $("distance_km").value =
+    t?.distance_km ?? 0;
+
+  $("elevation_m").value =
+    t?.elevation_m ?? 0;
+
+  $("points").value =
+    t?.points ?? 0;
+
+  $("bonus_points").value =
+    t?.bonus_points ?? 0;
+
+  $("route").value =
+    t?.route || "";
+
+  $("description").value =
+    t?.description || "";
+
+  $("image_url").value =
+    t?.image_url || "";
+
+
+  $("modal")
+    .classList
+    .add("on");
+
+}
+
+
+function closeForm() {
+
+  $("modal")
+    .classList
+    .remove("on");
+
+}
+
+
+// ============================================================
+// ULOŽENIE VÝLETU
+// ============================================================
+
+$("tripForm").onsubmit =
+async e => {
+
+  e.preventDefault();
+
+  notice();
+
+
+  const id =
+    $("tripId").value;
+
+
+  const body = {
+
+    name:
+      $("name")
+        .value
+        .trim(),
+
+    trip_date:
+      $("trip_date").value ||
+      null,
+
+    time_from:
+      $("time_from").value ||
+      null,
+
+    time_to:
+      $("time_to").value ||
+      null,
+
+    difficulty:
+      $("difficulty").value ||
+      null,
+
+    distance_km:
+      Number(
+        $("distance_km").value ||
+        0
+      ),
+
+    elevation_m:
+      Number(
+        $("elevation_m").value ||
+        0
+      ),
+
+    points:
+      Number(
+        $("points").value ||
+        0
+      ),
+
+    bonus_points:
+      Number(
+        $("bonus_points").value ||
+        0
+      ),
+
+    route:
+      $("route")
+        .value
+        .trim() ||
+      null,
+
+    description:
+      $("description")
+        .value
+        .trim() ||
+      null,
+
+    image_url:
+      $("image_url")
+        .value
+        .trim() ||
+      null
+
+  };
+
+
+  $("saveBtn").disabled =
+    true;
+
+
+  try {
+
+    await api(
+
+      id
+        ? `/api/admin/trips/${id}`
+        : "/api/admin/trips",
+
+      {
+        method:
+          id
+            ? "PUT"
+            : "POST",
+
+        body
+      }
+
+    );
+
+
+    closeForm();
+
+    await loadTrips();
+
+
+    notice(
+      id
+        ? "Výlet bol upravený."
+        : "Výlet bol vytvorený.",
+      "ok"
+    );
+
+
+  } catch(e) {
+
+    notice(
+      e?.message ||
+      String(e)
+    );
+
+
+  } finally {
+
+    $("saveBtn").disabled =
+      false;
+
   }
-}catch(e){notice("Prihlásenie: "+(e?.message||String(e)))}
+
+};
+
+
+// ============================================================
+// AKCIE VÝLETU
+// ============================================================
+
+$("tripGrid").onclick =
+async e => {
+
+  const b =
+    e.target.closest("button");
+
+  if (!b) {
+    return;
+  }
+
+
+  try {
+
+    // --------------------------------------------------------
+    // UPRAVIŤ
+    // --------------------------------------------------------
+
+    if (b.dataset.edit) {
+
+      const trip =
+        trips.find(
+          x =>
+            String(x.id) ===
+            b.dataset.edit
+        );
+
+
+      if (!trip) {
+        throw new Error(
+          "Výlet sa nenašiel."
+        );
+      }
+
+
+      openForm(trip);
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // VYMAZAŤ
+    // --------------------------------------------------------
+
+    if (b.dataset.delete) {
+
+      const trip =
+        trips.find(
+          x =>
+            String(x.id) ===
+            b.dataset.delete
+        );
+
+
+      const confirmed =
+        confirm(
+          `Naozaj chceš natrvalo vymazať výlet „${trip?.name || "výlet"}“?\n\nTáto operácia sa nedá vrátiť späť.`
+        );
+
+
+      if (!confirmed) {
+        return;
+      }
+
+
+      await api(
+        `/api/admin/trips/${b.dataset.delete}`,
+        {
+          method:"DELETE"
+        }
+      );
+
+
+      await loadTrips();
+
+
+      notice(
+        "Výlet bol vymazaný.",
+        "ok"
+      );
+
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // NASTAVIŤ AKTUÁLNY
+    // --------------------------------------------------------
+
+    if (b.dataset.current) {
+
+      if (
+        !confirm(
+          "Nastaviť tento výlet ako aktuálny?"
+        )
+      ) {
+        return;
+      }
+
+
+      await api(
+        `/api/admin/trips/${b.dataset.current}/current`,
+        {
+          method:"POST"
+        }
+      );
+
+
+      await loadTrips();
+
+
+      notice(
+        "Výlet je teraz aktuálny.",
+        "ok"
+      );
+
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // VRÁTIŤ MEDZI PLÁNOVANÉ
+    // --------------------------------------------------------
+
+    if (b.dataset.planned) {
+
+      const trip =
+        trips.find(
+          x =>
+            String(x.id) ===
+            b.dataset.planned
+        );
+
+
+      if (
+        !confirm(
+          `Vrátiť výlet „${trip?.name || "výlet"}“ medzi plánované?`
+        )
+      ) {
+        return;
+      }
+
+
+      await api(
+        `/api/admin/trips/${b.dataset.planned}/planned`,
+        {
+          method:"POST"
+        }
+      );
+
+
+      await loadTrips();
+
+
+      notice(
+        "Výlet bol vrátený medzi plánované.",
+        "ok"
+      );
+
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // OZNAČIŤ AKO ABSOLVOVANÝ
+    // --------------------------------------------------------
+
+    if (b.dataset.complete) {
+
+      if (
+        !confirm(
+          "Označiť aktuálny výlet ako absolvovaný?"
+        )
+      ) {
+        return;
+      }
+
+
+      await api(
+        `/api/admin/trips/${b.dataset.complete}/complete`,
+        {
+          method:"POST"
+        }
+      );
+
+
+      await loadTrips();
+
+
+      notice(
+        "Výlet bol presunutý medzi absolvované.",
+        "ok"
+      );
+
+
+      return;
+    }
+
+
+  } catch(err) {
+
+    notice(
+      err?.message ||
+      String(err)
+    );
+
+  }
+
+};
+
+
+// ============================================================
+// FILTRE
+// ============================================================
+
+document
+  .querySelectorAll(".tab")
+  .forEach(
+    b =>
+      b.onclick = () => {
+
+        document
+          .querySelectorAll(".tab")
+          .forEach(
+            x =>
+              x.classList.remove("on")
+          );
+
+
+        b.classList.add("on");
+
+        filter =
+          b.dataset.filter;
+
+        render();
+
+      }
+  );
+
+
+// ============================================================
+// TLAČIDLÁ
+// ============================================================
+
+$("newTrip").onclick =
+  () => openForm();
+
+$("closeModal").onclick =
+  closeForm;
+
+$("cancel").onclick =
+  closeForm;
+
+
+$("modal").onclick =
+  e => {
+
+    if (
+      e.target === $("modal")
+    ) {
+      closeForm();
+    }
+
+  };
+
+
+$("authBtn").onclick =
+  login;
+
+$("loginMain").onclick =
+  login;
+
+
+// ============================================================
+// MSAL ŠTART
+// ============================================================
+
+try {
+
+  const redirectResult =
+    await msal.handleRedirectPromise();
+
+
+  const returnedAccount =
+    redirectResult?.account ||
+    null;
+
+
+  if (returnedAccount) {
+
+    if (
+      !upn(returnedAccount)
+        .endsWith(DOMAIN)
+    ) {
+
+      throw new Error(
+        "Použi školský účet @zsnrudno.sk."
+      );
+
+    }
+
+
+    msal.setActiveAccount(
+      returnedAccount
+    );
+
+
+    await start(
+      returnedAccount
+    );
+
+
+  } else {
+
+
+    const existing =
+      msal
+        .getAllAccounts()
+        .find(
+          x =>
+            upn(x)
+              .endsWith(DOMAIN)
+        );
+
+
+    if (existing) {
+
+      msal.setActiveAccount(
+        existing
+      );
+
+      await start(existing);
+
+    }
+
+  }
+
+
+} catch(e) {
+
+  notice(
+    "Prihlásenie: " +
+    (
+      e?.message ||
+      String(e)
+    )
+  );
+
+}
+
+
 </script>
-</body></html>
+
+
+</body>
+
+</html>
