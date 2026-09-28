@@ -54,6 +54,9 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 .checkinPanel.success{border:2px solid #78bd8e}.checkinPanel.success .checkinIcon{background:#dff3e6}.checkinPanel.warn{border:2px solid #e7ca68}.checkinPanel.warn .checkinIcon{background:#fff4c7}.checkinPanel.fail{border:2px solid #df9292}.checkinPanel.fail .checkinIcon{background:#ffe6e6}
 .badge.locked{filter:grayscale(1);opacity:.48}.badge.locked i{position:relative}.bonusCard{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;background:#fff}.bonusCard h3{margin:0 0 5px;font-size:14px}.bonusCard textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:9px}.bonusCard button,.installPwa{border:0;border-radius:10px;padding:10px 12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}.bonusState{font-size:10px;font-weight:900;margin-top:7px}.installPwa{width:100%;margin-top:10px;background:#fff;color:var(--g)}
 </style>
+
+  <link rel="icon" type="image/png" sizes="96x96" href="/turisticky-kruzok/icons/pass-96.png" data-pwa-icon>
+  <link rel="apple-touch-icon" sizes="180x180" href="/turisticky-kruzok/icons/pass-180.png" data-pwa-icon>
 </head>
 <body>
 <main class="app">
@@ -395,7 +398,7 @@ let deferredPwaPrompt=null;window.addEventListener("beforeinstallprompt",e=>{e.p
 <script>
 if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/turisticky-kruzok/sw.js", { scope: "/turisticky-kruzok/" })
+    navigator.serviceWorker.register("/turisticky-kruzok/pas/sw.js", { scope: "/turisticky-kruzok/pas/" })
       .catch(err => console.error("Service worker registration failed:", err));
   });
 }
