@@ -52,7 +52,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 .checkinValues span{background:#f3f7f4;border-radius:999px;padding:7px 9px;font-size:10px;font-weight:800}
 .checkinAction{width:100%;border:0;border-radius:12px;padding:12px;margin-top:12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}
 .checkinPanel.success{border:2px solid #78bd8e}.checkinPanel.success .checkinIcon{background:#dff3e6}.checkinPanel.warn{border:2px solid #e7ca68}.checkinPanel.warn .checkinIcon{background:#fff4c7}.checkinPanel.fail{border:2px solid #df9292}.checkinPanel.fail .checkinIcon{background:#ffe6e6}
-.badge.locked{filter:grayscale(1);opacity:.48}.badge.locked i{position:relative}.bonusCard{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;background:#fff}.bonusCard h3{margin:0 0 5px;font-size:14px}.bonusCard textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:9px}.bonusCard button,.installPwa{border:0;border-radius:10px;padding:10px 12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}.bonusState{font-size:10px;font-weight:900;margin-top:7px}.installPwa{width:100%;margin-top:10px;background:#fff;color:var(--g)}
+.badge.locked{filter:grayscale(1);opacity:.48}.badge.locked i{position:relative}.bonusCard{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;background:#fff}.bonusCard h3{margin:0 0 5px;font-size:14px}.bonusCard textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:9px}.bonusCard button,.installPwa{border:0;border-radius:10px;padding:10px 12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}.bonusState{font-size:10px;font-weight:900;margin-top:7px}.installPwa{width:100%;margin-top:10px;background:#fff4d7;color:#5c3b13;border:2px solid #c98a2e;box-shadow:0 5px 14px #0002}
 </style>
 
   <link rel="icon" type="image/png" sizes="96x96" href="/turisticky-kruzok/icons/pass-96.png" data-pwa-icon>
@@ -67,7 +67,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <div class="authwho" id="authwho"><b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span></div>
 <button class="authbtn" id="authbtn" type="button">Prihlásiť</button>
 </div>
-<div class="autherror" id="autherror"></div><button class="installPwa" type="button">Pridať aplikáciu do telefónu</button>
+<div class="autherror" id="autherror"></div><button id="installPassportPwa" class="installPwa" type="button">🎒 Pridať TURISTICKÝ PAS do telefónu</button>
 
 <div id="checkinPanel" class="checkinPanel">
   <div class="checkinTop">
@@ -392,7 +392,28 @@ try{
   if(checkinToken)setCheckinPanel("fail","Stránku sa nepodarilo načítať",e.message||"Skús stránku obnoviť.");
 }
 
-let deferredPwaPrompt=null;window.addEventListener("beforeinstallprompt",e=>{e.preventDefault();deferredPwaPrompt=e;document.querySelectorAll(".installPwa").forEach(b=>b.hidden=false)});document.querySelectorAll(".installPwa").forEach(b=>b.addEventListener("click",async()=>{if(deferredPwaPrompt){deferredPwaPrompt.prompt();await deferredPwaPrompt.userChoice;deferredPwaPrompt=null;b.hidden=true}else alert(/iphone|ipad|ipod/i.test(navigator.userAgent)?"Na iPhone/iPad: Zdieľať → Pridať na plochu.":"V ponuke prehliadača vyber Inštalovať aplikáciu alebo Pridať na plochu.")}));
+let passportInstallPrompt = null;
+const passportInstallButton = document.getElementById("installPassportPwa");
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  passportInstallPrompt = event;
+});
+
+passportInstallButton?.addEventListener("click", async () => {
+  const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (isiOS) {
+    alert("Na iPhone/iPad otvor Zdieľať a vyber „Pridať na plochu“. Použije sa ikona PAS.");
+    return;
+  }
+  if (!passportInstallPrompt) {
+    alert("Chrome momentálne neponúka inštaláciu Turistického pasu. Ak už máš starú skratku, odstráň ju, obnov túto stránku a skús tlačidlo znova. Nevytváraj obyčajnú skratku cez „Pridať na plochu“.");
+    return;
+  }
+  passportInstallPrompt.prompt();
+  await passportInstallPrompt.userChoice;
+  passportInstallPrompt = null;
+});
 </script>
 
 <script>
@@ -400,6 +421,20 @@ if ("serviceWorker" in navigator) {
   window.addEventListener("load", () => {
     navigator.serviceWorker.register("/turisticky-kruzok/pas/sw.js", { scope: "/turisticky-kruzok/pas/" })
       .catch(err => console.error("Service worker registration failed:", err));
+  });
+}
+</script>
+<script>
+if (new URLSearchParams(location.search).get("install") === "1") {
+  window.addEventListener("load", () => {
+    const b = document.getElementById("installPassportPwa");
+    if (b) {
+      b.scrollIntoView({behavior:"smooth", block:"center"});
+      b.animate(
+        [{transform:"scale(1)"},{transform:"scale(1.035)"},{transform:"scale(1)"}],
+        {duration:700, iterations:2}
+      );
+    }
   });
 }
 </script>

@@ -1,4 +1,4 @@
-const CACHE_NAME = "turisticky-pas-v1";
+const CACHE_NAME = "turisticky-pas-v2";
 const APP_SHELL = [
   "/turisticky-kruzok/pas/",
   "/turisticky-kruzok/pas/index.html",
