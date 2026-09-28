@@ -301,12 +301,22 @@ async function submitCheckin(){
 async function login(){
   error();
   try{
-    const r=await msal.loginPopup({scopes:["openid","profile","email"],extraScopesToConsent:[API_SCOPE],prompt:"select_account"});
+    const r=await msal.loginPopup({
+      scopes:["openid","profile","email"],
+      extraScopesToConsent:[API_SCOPE],
+      prompt:"select_account",
+      overrideInteractionInProgress:true
+    });
     const a=r.account,u=upn(a);
     if(!u.endsWith(DOMAIN)){error("Použi školský účet s adresou @zsnrudno.sk.");try{await msal.logoutPopup({account:a})}catch{} await renderUser(null);return}
     msal.setActiveAccount(a);await renderUser(a);
     if(checkinToken&&!checkinFinished)await submitCheckin();
-  }catch(e){console.error(e);error("Prihlásenie sa nepodarilo. Skús to znova.")}
+  }catch(e){
+    console.error("MSAL LOGIN ERROR",e);
+    const code=e?.errorCode||e?.code||"";
+    const msg=e?.errorMessage||e?.message||String(e);
+    error(`Prihlásenie sa nepodarilo${code?` (${code})`:""}: ${msg}`);
+  }
 }
 async function renderUser(a){
   error();account=a;
