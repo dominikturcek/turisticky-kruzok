@@ -1,0 +1,31 @@
+{
+  "id": "/turisticky-kruzok/",
+  "name": "Turistický krúžok ZŠ Nitrianske Rudno",
+  "short_name": "Turistický krúžok",
+  "description": "Web Turistického krúžku ZŠ Nitrianske Rudno",
+  "start_url": "/turisticky-kruzok/",
+  "scope": "/turisticky-kruzok/",
+  "display": "standalone",
+  "background_color": "#193b2a",
+  "theme_color": "#244d37",
+  "icons": [
+    {
+      "src": "/turisticky-kruzok/icons/web-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/turisticky-kruzok/icons/web-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/turisticky-kruzok/icons/web-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
