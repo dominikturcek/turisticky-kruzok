@@ -317,7 +317,30 @@ async function renderUser(a){
   }
   const username=upn(a),name=a.name||a.idTokenClaims?.name||username;
   $("authwho").innerHTML=`<b>${esc(name)}</b><span>${esc(username)}</span>`;
-  $("authbtn").textContent="Odhlásiť";$("authbtn").className="authbtn logout";$("authbtn").onclick=()=>msal.logoutRedirect({account:a,postLogoutRedirectUri:HOME});
+  $("authbtn").textContent="Odhlásiť";
+  $("authbtn").className="authbtn logout";
+  $("authbtn").onclick=async()=>{
+    error();
+    const current=account;
+    try{
+      await msal.logoutPopup({
+        account:current,
+        postLogoutRedirectUri:REDIRECT
+      });
+    }catch(e){
+      console.error(e);
+      error("Odhlásenie sa nepodarilo dokončiť. Skús to znova.");
+      return;
+    }
+    msal.setActiveAccount(null);
+    account=null;
+    await renderUser(null);
+    if(checkinToken){
+      setCheckinPanel("warn",`${checkinTrip?.name||"Výlet"} – zápis účasti`,
+        "Na zapísanie účasti sa prihlás školským Microsoft účtom.",
+        checkinTrip,"Prihlásiť a zapísať účasť",login);
+    }
+  };
   $("passportName").textContent=name;$("passportCard").style.display="block";
   try{await loadPassport(a)}catch(e){console.error(e);error(`Pas sa nepodarilo načítať: ${e.message}`)}
 }
