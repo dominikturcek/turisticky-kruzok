@@ -463,6 +463,79 @@ main{
 }
 
 
+/* ======================================================
+   QR CHECK-IN
+====================================================== */
+
+.qrbox{
+  margin-top:18px;
+  display:grid;
+  grid-template-columns:280px 1fr;
+  gap:22px;
+  align-items:center;
+}
+
+.qrcode{
+  min-height:280px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:14px;
+  background:#fff;
+  border:1px solid var(--line);
+  border-radius:16px;
+}
+
+.qrcode canvas,
+.qrcode img{
+  max-width:100%;
+  height:auto !important;
+}
+
+.qrinfo h3{
+  margin:0 0 8px;
+  font-size:24px;
+}
+
+.qrstatus{
+  display:inline-block;
+  margin:0 0 12px;
+  padding:7px 10px;
+  border-radius:999px;
+  background:#eaf7ee;
+  color:var(--g);
+  font-size:11px;
+  font-weight:900;
+}
+
+.qrlink{
+  margin-top:12px;
+  padding:10px;
+  border:1px solid var(--line);
+  border-radius:10px;
+  background:#f7faf8;
+  font-size:10px;
+  color:var(--muted);
+  overflow-wrap:anywhere;
+}
+
+.qractions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:16px;
+}
+
+@media(max-width:720px){
+  .qrbox{
+    grid-template-columns:1fr;
+  }
+
+  .qrcode{
+    min-height:240px;
+  }
+}
+
 @media(max-width:720px){
 
   header{
@@ -1005,6 +1078,103 @@ main{
 </div>
 
 
+<!-- ======================================================
+     MODAL QR CHECK-IN
+======================================================= -->
+
+<div
+  class="modal"
+  id="qrModal"
+>
+
+  <div class="dialog">
+
+    <div class="dialoghead">
+
+      <h2>
+        QR účasť
+      </h2>
+
+      <button
+        class="x"
+        id="closeQrModal"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="qrbox">
+
+      <div
+        class="qrcode"
+        id="qrCode"
+      ></div>
+
+      <div class="qrinfo">
+
+        <div
+          class="qrstatus"
+          id="qrStatus"
+        >
+          ● QR účasť je aktívna
+        </div>
+
+        <h3 id="qrTitle">
+          Výlet
+        </h3>
+
+        <div
+          class="meta"
+          id="qrMeta"
+        ></div>
+
+        <div
+          class="qrlink"
+          id="qrLink"
+        ></div>
+
+        <div class="qractions">
+
+          <button
+            class="btn primary"
+            id="qrPrint"
+            type="button"
+          >
+            🖨️ Vytlačiť QR kód
+          </button>
+
+          <button
+            class="btn ghost"
+            id="qrCopy"
+            type="button"
+          >
+            🔗 Kopírovať odkaz
+          </button>
+
+          <button
+            class="btn danger"
+            id="qrCloseCheckin"
+            type="button"
+          >
+            ⛔ Ukončiť QR účasť
+          </button>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+
+
 <script type="module">
 
 
@@ -1034,6 +1204,9 @@ const API_SCOPE =
 
 const API_BASE =
   "https://turisticky-kruzok-api.dominikturcek.workers.dev";
+
+const CHECKIN_PAGE =
+  "https://dominikturcek.github.io/turisticky-kruzok/pas/";
 
 
 const msal =
@@ -1072,6 +1245,8 @@ let account = null;
 let token = null;
 let trips = [];
 let filter = "all";
+let currentQrTrip = null;
+let currentQrUrl = "";
 
 
 const $ =
@@ -1476,6 +1651,11 @@ function render() {
           t.status === "current"
         ) {
 
+          const qrActive =
+            Number(t.checkin_enabled) === 1 &&
+            Boolean(t.checkin_token);
+
+
           actions = `
 
             <button
@@ -1484,6 +1664,35 @@ function render() {
             >
               Upraviť
             </button>
+
+            ${
+              qrActive
+
+              ? `
+                <button
+                  class="btn gold"
+                  data-qr="${t.id}"
+                >
+                  📱 Zobraziť QR
+                </button>
+
+                <button
+                  class="btn danger"
+                  data-qr-close="${t.id}"
+                >
+                  ⛔ Ukončiť QR
+                </button>
+              `
+
+              : `
+                <button
+                  class="btn gold"
+                  data-qr-open="${t.id}"
+                >
+                  📱 Spustiť QR účasť
+                </button>
+              `
+            }
 
             <button
               class="btn primary"
@@ -1668,6 +1877,311 @@ function render() {
         </div>
 
       `;
+
+}
+
+
+// ============================================================
+// QR CHECK-IN
+// ============================================================
+
+function checkinUrl(tokenValue) {
+
+  return (
+    CHECKIN_PAGE +
+    "?checkin=" +
+    encodeURIComponent(tokenValue)
+  );
+
+}
+
+
+function closeQrModal() {
+
+  $("qrModal")
+    .classList
+    .remove("on");
+
+  $("qrCode").innerHTML = "";
+
+  currentQrTrip = null;
+  currentQrUrl = "";
+
+}
+
+
+function showQrModal(trip) {
+
+  if (
+    !trip ||
+    Number(trip.checkin_enabled) !== 1 ||
+    !trip.checkin_token
+  ) {
+
+    throw new Error(
+      "QR účasť pre tento výlet nie je aktívna."
+    );
+
+  }
+
+
+  if (typeof window.QRCode !== "function") {
+
+    throw new Error(
+      "Knižnica na vytvorenie QR kódu sa nenačítala. Obnov stránku a skús to znova."
+    );
+
+  }
+
+
+  currentQrTrip = trip;
+  currentQrUrl =
+    checkinUrl(trip.checkin_token);
+
+
+  $("qrTitle").textContent =
+    trip.name || "Výlet";
+
+  $("qrMeta").textContent =
+    `${fmtDate(trip.trip_date)}${fmtTime(trip)} · ${Number(
+      trip.distance_km || 0
+    ).toLocaleString("sk-SK")} km · ↑ ${Number(
+      trip.elevation_m || 0
+    )} m · ${Number(
+      trip.points || 0
+    )} bodov`;
+
+  $("qrLink").textContent =
+    currentQrUrl;
+
+
+  const box = $("qrCode");
+
+  box.innerHTML = "";
+
+
+  new window.QRCode(
+    box,
+    {
+      text:currentQrUrl,
+      width:250,
+      height:250,
+      correctLevel:
+        window.QRCode.CorrectLevel.H
+    }
+  );
+
+
+  $("qrModal")
+    .classList
+    .add("on");
+
+}
+
+
+async function openQrForTrip(id) {
+
+  const d =
+    await api(
+      `/api/admin/trips/${id}/checkin/open`,
+      {
+        method:"POST"
+      }
+    );
+
+
+  await loadTrips();
+
+
+  const trip =
+    trips.find(
+      x => String(x.id) === String(id)
+    ) || d.trip;
+
+
+  showQrModal(trip);
+
+}
+
+
+async function closeQrForTrip(id) {
+
+  await api(
+    `/api/admin/trips/${id}/checkin/close`,
+    {
+      method:"POST"
+    }
+  );
+
+
+  closeQrModal();
+
+  await loadTrips();
+
+
+  notice(
+    "QR prihlasovanie bolo ukončené.",
+    "ok"
+  );
+
+}
+
+
+function qrImageDataUrl() {
+
+  const canvas =
+    $("qrCode")
+      .querySelector("canvas");
+
+  if (canvas) {
+    return canvas.toDataURL("image/png");
+  }
+
+
+  const img =
+    $("qrCode")
+      .querySelector("img");
+
+  return img?.src || "";
+
+}
+
+
+function printQr() {
+
+  if (
+    !currentQrTrip ||
+    !currentQrUrl
+  ) {
+    return;
+  }
+
+
+  const image =
+    qrImageDataUrl();
+
+
+  if (!image) {
+
+    notice(
+      "QR kód sa nepodarilo pripraviť na tlač."
+    );
+
+    return;
+  }
+
+
+  const w =
+    window.open(
+      "",
+      "_blank",
+      "width=900,height=900"
+    );
+
+
+  if (!w) {
+
+    notice(
+      "Prehliadač zablokoval okno tlače. Povoľ vyskakovacie okná pre túto stránku."
+    );
+
+    return;
+  }
+
+
+  const title =
+    esc(currentQrTrip.name || "Výlet");
+
+  const meta =
+    esc(
+      `${fmtDate(currentQrTrip.trip_date)}${fmtTime(currentQrTrip)}`
+    );
+
+  const url =
+    esc(currentQrUrl);
+
+
+  w.document.write(`
+    <!doctype html>
+    <html lang="sk">
+    <head>
+      <meta charset="utf-8">
+      <title>QR účasť · ${title}</title>
+      <style>
+        @page{size:A4;margin:16mm}
+        *{box-sizing:border-box}
+        body{
+          margin:0;
+          font-family:Arial,sans-serif;
+          color:#173427;
+          text-align:center;
+        }
+        .sheet{
+          min-height:250mm;
+          display:flex;
+          flex-direction:column;
+          align-items:center;
+          justify-content:center;
+          border:3px solid #176b3a;
+          border-radius:20px;
+          padding:20mm;
+        }
+        .school{
+          font-size:15px;
+          font-weight:700;
+          color:#176b3a;
+          margin-bottom:12px;
+        }
+        h1{
+          margin:0 0 8px;
+          font-size:34px;
+        }
+        .meta{
+          margin-bottom:20px;
+          font-size:16px;
+          color:#5f7067;
+        }
+        img{
+          width:110mm;
+          height:110mm;
+          image-rendering:pixelated;
+        }
+        .instruction{
+          margin-top:20px;
+          font-size:22px;
+          font-weight:800;
+        }
+        .small{
+          margin-top:10px;
+          font-size:12px;
+          color:#6d7d74;
+          overflow-wrap:anywhere;
+        }
+      </style>
+    </head>
+    <body>
+      <div class="sheet">
+        <div class="school">
+          Turistický krúžok · ZŠ Nitrianske Rudno
+        </div>
+        <h1>${title}</h1>
+        <div class="meta">${meta}</div>
+        <img src="${image}" alt="QR kód">
+        <div class="instruction">
+          Naskenuj QR kód a zapíš si účasť
+        </div>
+        <div class="small">${url}</div>
+      </div>
+      <script>
+        window.onload = () => {
+          setTimeout(() => window.print(), 250);
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+
+  w.document.close();
 
 }
 
@@ -1897,6 +2411,88 @@ async e => {
 
 
   try {
+
+    // --------------------------------------------------------
+    // QR: SPUSTIŤ
+    // --------------------------------------------------------
+
+    if (b.dataset.qrOpen) {
+
+      if (
+        !confirm(
+          "Spustiť QR prihlasovanie pre tento výlet?\n\nPri každom novom spustení sa vytvorí nový QR kód."
+        )
+      ) {
+        return;
+      }
+
+
+      b.disabled = true;
+
+      await openQrForTrip(
+        b.dataset.qrOpen
+      );
+
+      notice(
+        "QR prihlasovanie je aktívne.",
+        "ok"
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // QR: ZOBRAZIŤ
+    // --------------------------------------------------------
+
+    if (b.dataset.qr) {
+
+      const trip =
+        trips.find(
+          x =>
+            String(x.id) ===
+            b.dataset.qr
+        );
+
+
+      if (!trip) {
+        throw new Error(
+          "Výlet sa nenašiel."
+        );
+      }
+
+
+      showQrModal(trip);
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // QR: UKONČIŤ
+    // --------------------------------------------------------
+
+    if (b.dataset.qrClose) {
+
+      if (
+        !confirm(
+          "Ukončiť QR prihlasovanie?\n\nPo ukončení už žiaci týmto QR kódom účasť nezapíšu."
+        )
+      ) {
+        return;
+      }
+
+
+      b.disabled = true;
+
+      await closeQrForTrip(
+        b.dataset.qrClose
+      );
+
+      return;
+    }
+
 
     // --------------------------------------------------------
     // UPRAVIŤ
@@ -2159,6 +2755,105 @@ $("authBtn").onclick =
 
 $("loginMain").onclick =
   login;
+
+
+// ============================================================
+// QR MODAL - TLAČIDLÁ
+// ============================================================
+
+$("closeQrModal").onclick =
+  closeQrModal;
+
+
+$("qrModal").onclick =
+  e => {
+
+    if (
+      e.target === $("qrModal")
+    ) {
+      closeQrModal();
+    }
+
+  };
+
+
+$("qrPrint").onclick =
+  printQr;
+
+
+$("qrCopy").onclick =
+  async () => {
+
+    if (!currentQrUrl) {
+      return;
+    }
+
+
+    try {
+
+      await navigator.clipboard.writeText(
+        currentQrUrl
+      );
+
+      notice(
+        "Odkaz na QR check-in bol skopírovaný.",
+        "ok"
+      );
+
+    } catch {
+
+      window.prompt(
+        "Skopíruj odkaz:",
+        currentQrUrl
+      );
+
+    }
+
+  };
+
+
+$("qrCloseCheckin").onclick =
+  async () => {
+
+    if (!currentQrTrip) {
+      return;
+    }
+
+
+    if (
+      !confirm(
+        "Ukončiť QR prihlasovanie?\n\nPo ukončení už žiaci týmto QR kódom účasť nezapíšu."
+      )
+    ) {
+      return;
+    }
+
+
+    $("qrCloseCheckin").disabled =
+      true;
+
+
+    try {
+
+      await closeQrForTrip(
+        currentQrTrip.id
+      );
+
+    } catch(e) {
+
+      notice(
+        e?.message ||
+        String(e)
+      );
+
+    } finally {
+
+      $("qrCloseCheckin").disabled =
+        false;
+
+    }
+
+  };
 
 
 // ============================================================
