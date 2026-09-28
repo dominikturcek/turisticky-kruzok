@@ -1,8 +1,8 @@
-const CACHE_NAME = "turisticky-pas-v3";
+const CACHE_NAME = "turisticky-pas-v2";
 const APP_SHELL = [
   "/turisticky-kruzok/pas/",
   "/turisticky-kruzok/pas/index.html",
-  "/turisticky-kruzok/pas/manifest.json",
+  "/turisticky-kruzok/pas/manifest.webmanifest",
   "/turisticky-kruzok/icons/pass-96.png",
   "/turisticky-kruzok/icons/pass-180.png",
   "/turisticky-kruzok/icons/pass-192.png",

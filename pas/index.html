@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Turistický pas</title>
-<link rel="manifest" href="./manifest.json"><meta name="theme-color" content="#176b3a">
+<link rel="manifest" href="/turisticky-kruzok/pas/manifest.webmanifest"><meta name="theme-color" content="#176b3a">
 <style>
 :root{--g:#176b3a;--g2:#eaf5ee;--ink:#173427;--muted:#708078;--line:#dce7e0;--gold:#f0b429;--bg:#193b2a}
 *{box-sizing:border-box}body{margin:0;background:var(--bg);font-family:Inter,system-ui,Arial,sans-serif;color:var(--ink)}
@@ -53,7 +53,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 .checkinAction{width:100%;border:0;border-radius:12px;padding:12px;margin-top:12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}
 .checkinPanel.success{border:2px solid #78bd8e}.checkinPanel.success .checkinIcon{background:#dff3e6}.checkinPanel.warn{border:2px solid #e7ca68}.checkinPanel.warn .checkinIcon{background:#fff4c7}.checkinPanel.fail{border:2px solid #df9292}.checkinPanel.fail .checkinIcon{background:#ffe6e6}
 .badge.locked{filter:grayscale(1);opacity:.48}.badge.locked i{position:relative}.bonusCard{border:1px solid var(--line);border-radius:16px;padding:14px;margin:10px 0;background:#fff}.bonusCard h3{margin:0 0 5px;font-size:14px}.bonusCard textarea{width:100%;min-height:80px;border:1px solid var(--line);border-radius:10px;padding:10px;margin-top:9px}.bonusCard button,.installPwa{border:0;border-radius:10px;padding:10px 12px;background:var(--g);color:#fff;font-weight:900;cursor:pointer}.bonusState{font-size:10px;font-weight:900;margin-top:7px}.installPwa{width:100%;margin-top:10px;background:#fff4d7;color:#5c3b13;border:2px solid #c98a2e;box-shadow:0 5px 14px #0002}
-.mobileInstallOnly{display:none!important}body.mobile-device .mobileInstallOnly{display:block!important}\n</style>
+</style>
 
   <link rel="icon" type="image/png" sizes="96x96" href="/turisticky-kruzok/icons/pass-96.png" data-pwa-icon>
   <link rel="apple-touch-icon" sizes="180x180" href="/turisticky-kruzok/icons/pass-180.png" data-pwa-icon>
@@ -67,7 +67,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <div class="authwho" id="authwho"><b>Neprihlásený</b><span>Prihlás sa školským Microsoft účtom.</span></div>
 <button class="authbtn" id="authbtn" type="button">Prihlásiť</button>
 </div>
-<div class="autherror" id="autherror"></div><button id="installPassportPwa" class="installPwa mobileInstallOnly" type="button">🎒 Pridať TURISTICKÝ PAS do telefónu</button>
+<div class="autherror" id="autherror"></div><button id="installPassportPwa" class="installPwa" type="button">🎒 Pridať TURISTICKÝ PAS do telefónu</button>
 
 <div id="checkinPanel" class="checkinPanel">
   <div class="checkinTop">
@@ -437,14 +437,6 @@ if (new URLSearchParams(location.search).get("install") === "1") {
     }
   });
 }
-</script>
-<script>
-(function(){
-  const ua = navigator.userAgent || "";
-  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
-                 (navigator.userAgentData && navigator.userAgentData.mobile === true);
-  if (mobile) document.body.classList.add("mobile-device");
-})();
 </script>
 </body>
 </html>
