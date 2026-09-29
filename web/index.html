@@ -1,0 +1,423 @@
+<!doctype html>
+<html lang="sk">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+
+  <title>Turistický krúžok | Základná škola Nitrianske Rudno</title>
+
+  <link rel="stylesheet" href="../styles.css">
+  <link rel="manifest" href="./manifest.json">
+  <meta name="theme-color" content="#244d37">
+
+  <link rel="icon" type="image/png" sizes="96x96" href="/turisticky-kruzok/icons/web-96.png" data-pwa-icon>
+  <link rel="apple-touch-icon" sizes="180x180" href="/turisticky-kruzok/icons/web-180.png" data-pwa-icon>
+<style>
+.installChoice{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:10px;font-weight:900;text-decoration:none;cursor:pointer;border:2px solid transparent;box-sizing:border-box}
+.installWeb{background:#174f35;color:#fff;border-color:#174f35}
+.installPass{background:#fff4d7;color:#6b4518;border-color:#c98a2e}
+.installChoice:hover{filter:brightness(.96)}
+@media(max-width:760px){.promoActions{display:grid;gap:9px}.installChoice{width:100%}}
+</style>
+<style>.mobileInstallOnly{display:none!important}body.mobile-device .mobileInstallOnly{display:inline-flex!important}@media(max-width:760px){body.mobile-device .mobileInstallOnly{display:flex!important}}</style>
+</head>
+
+<body>
+
+<header class="hero">
+
+  <nav class="nav wrap">
+
+    <a class="brand" href="/turisticky-kruzok/web/">
+      <span class="logo">▲<i>▲</i></span>
+
+      <span>
+        <b>TURISTICKÝ KRÚŽOK</b>
+        <small>ZÁKLADNÁ ŠKOLA NITRIANSKE RUDNO</small>
+      </span>
+    </a>
+
+    <div class="navlinks">
+
+      <a class="active" href="/turisticky-kruzok/web/">
+        DOMOV
+      </a>
+
+      <a class="passport" href="/turisticky-kruzok/pas/">
+        👥 TURISTICKÝ PAS
+      </a>
+
+    </div>
+
+  </nav>
+
+
+  <div class="heroContent wrap">
+
+    <h1>
+      Turistický<br>
+      krúžok
+    </h1>
+
+    <p>
+      Základná škola Nitrianske Rudno
+    </p>
+
+  </div>
+
+
+  <div class="trailSign">
+    <span>HORY</span>
+    <span>PRIATELIA</span>
+    <span>ZÁŽITKY</span>
+  </div>
+
+  <div class="tear"></div>
+
+</header>
+
+
+<main class="wrap">
+
+  <!-- ===================================================
+       NAJBLIŽŠÍ / AKTUÁLNY VÝLET
+       =================================================== -->
+
+  <section class="topGrid">
+
+    <article class="panel nextTrip">
+
+      <div class="panelHead green">
+
+        <h2 id="nextTripSectionTitle">
+          🥾 &nbsp;NAJBLIŽŠÍ VÝLET
+        </h2>
+
+        <strong id="nextTripHeaderDate">
+          NAČÍTAVAM…
+        </strong>
+
+      </div>
+
+
+      <div class="nextBody">
+
+        <div
+          class="tripImage mainTrip"
+          id="nextTripImage"
+        >
+
+          <span class="difficulty">
+
+            ⛰
+
+            <b id="nextTripDifficulty">
+              —
+            </b>
+
+            <small>
+              NÁROČNOSŤ
+            </small>
+
+          </span>
+
+          <span
+            class="tripStatusBadge"
+            id="nextTripStatus"
+            hidden
+          ></span>
+
+        </div>
+
+
+        <div class="tripInfo">
+
+          <h3 id="nextTripName">
+            Načítavam výlet…
+          </h3>
+
+          <p id="nextTripRoute">
+            📍 —
+          </p>
+
+          <ul>
+
+            <li id="nextTripDate">
+              📅 —
+            </li>
+
+            <li id="nextTripTime">
+              🕘 —
+            </li>
+
+            <li id="nextTripDistance">
+              🥾 —
+            </li>
+
+            <li id="nextTripElevation">
+              ↗ —
+            </li>
+
+          </ul>
+
+
+          <a
+            id="nextTripDetailButton"
+            class="tripDetailButton"
+            href="#"
+          >
+            VIAC INFORMÁCIÍ &nbsp; →
+          </a>
+
+        </div>
+
+      </div>
+
+    </article>
+
+
+    <!-- =================================================
+         POKROKY
+         ================================================= -->
+
+    <article class="panel progress">
+
+      <div class="panelHead">
+        <h2>
+          ▥ &nbsp;NAŠE POKROKY
+        </h2>
+      </div>
+
+
+      <div class="stats">
+
+        <div>
+
+          <i>⛰</i>
+
+          <b id="completedTripsCount">
+            —
+          </b>
+
+          <span>
+            absolvovaných<br>
+            výletov
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <i>⌖</i>
+
+          <b id="completedDistance">
+            — km
+          </b>
+
+          <span>
+            spolu<br>
+            nachodených
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <i>👥</i>
+
+          <b>
+            21
+          </b>
+
+          <span>
+            členov<br>
+            krúžku
+          </span>
+
+        </div>
+
+
+        <div>
+
+          <i>🏅</i>
+
+          <b>
+            0
+          </b>
+
+          <span>
+            získaných<br>
+            odznakov
+          </span>
+
+        </div>
+
+      </div>
+
+    </article>
+
+  </section>
+
+
+
+  <section class="passportPromo panel">
+    <div><span class="promoIcon">🎒</span><div><h2>Tvoj turistický pas</h2><p>Prihlás sa školským Microsoft účtom. Zbieraj absolvované výlety, kilometre, prevýšenie, body, pečiatky a odznaky.</p></div></div>
+    <div class="promoActions">
+      <a class="tripDetailButton" href="/turisticky-kruzok/pas/">OTVORIŤ TURISTICKÝ PAS →</a>
+      <button id="installWebPwa" class="installChoice installWeb mobileInstallOnly" type="button">🌄 Pridať WEB do telefónu</button>
+    </div>
+  </section>
+
+  <!-- ===================================================
+       PLÁNOVANÉ VÝLETY
+       =================================================== -->
+
+  <section
+    class="panel sectionBlock"
+    id="plannedSection"
+  >
+
+    <div class="panelHead">
+
+      <h2>
+        ▣ &nbsp;PLÁNOVANÉ VÝLETY
+      </h2>
+
+    </div>
+
+
+    <div
+      class="tripCards"
+      id="plannedTrips"
+    >
+
+      <p class="emptyMessage">
+        Načítavam plánované výlety…
+      </p>
+
+    </div>
+
+  </section>
+
+
+  <!-- ===================================================
+       USKUTOČNENÉ VÝLETY
+       =================================================== -->
+
+  <section
+    class="panel sectionBlock done"
+    id="completedSection"
+  >
+
+    <div class="panelHead">
+
+      <h2>
+        ▧ &nbsp;USKUTOČNENÉ VÝLETY
+      </h2>
+
+    </div>
+
+
+    <div
+      class="doneCards"
+      id="completedTrips"
+    >
+
+      <p class="emptyMessage">
+        Načítavam uskutočnené výlety…
+      </p>
+
+    </div>
+
+  </section>
+
+</main>
+
+
+<footer>
+
+  <div class="mountains"></div>
+
+  <div class="wrap footerIn">
+
+    <div class="brand footerBrand">
+
+      <span class="logo">
+        ▲<i>▲</i>
+      </span>
+
+      <span>
+        <b>TURISTICKÝ KRÚŽOK</b>
+        <small>Základná škola Nitrianske Rudno</small>
+      </span>
+
+    </div>
+
+
+
+    <div class="footerContact"><b>Vedúci krúžku: Dominik Turček</b><a href="mailto:dominikturcek@gmail.com">dominikturcek@gmail.com</a><a href="tel:+421902286946">0902 286 946</a><a href="https://wa.me/421902286946" target="_blank" rel="noopener">WhatsApp</a></div>
+
+    <a href="/turisticky-kruzok/pas/">
+      Turistický pas →
+    </a>
+
+  </div>
+
+</footer>
+
+
+<script
+  type="module"
+  src="../app.js"
+></script>
+
+<script>
+let webInstallPrompt = null;
+const installWebButton = document.getElementById("installWebPwa");
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  webInstallPrompt = event;
+});
+
+installWebButton?.addEventListener("click", async () => {
+  const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+  if (isiOS) {
+    alert("Na iPhone/iPad otvor Zdieľať a vyber „Pridať na plochu“. Použije sa ikona WEB.");
+    return;
+  }
+  if (!webInstallPrompt) {
+    alert("Chrome momentálne neponúka inštaláciu WEB aplikácie. Ak už máš starú skratku, odstráň ju, obnov stránku a skús tlačidlo znova. Nevytváraj obyčajnú skratku cez „Pridať na plochu“.");
+    return;
+  }
+  webInstallPrompt.prompt();
+  await webInstallPrompt.userChoice;
+  webInstallPrompt = null;
+});
+
+window.addEventListener("appinstalled", () => {
+  webInstallPrompt = null;
+});
+</script>
+
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/turisticky-kruzok/web/sw.js", { scope: "/turisticky-kruzok/web/" })
+      .catch(err => console.error("Service worker registration failed:", err));
+  });
+}
+</script>
+<script>
+(function(){
+  const ua = navigator.userAgent || "";
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
+                 (navigator.userAgentData && navigator.userAgentData.mobile === true);
+  if (mobile) document.body.classList.add("mobile-device");
+})();
+</script>
+</body>
+</html>
