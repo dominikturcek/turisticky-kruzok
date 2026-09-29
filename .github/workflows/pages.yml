@@ -39,6 +39,10 @@ jobs:
           mkdir -p dist/web
           mkdir -p dist/pas
           mkdir -p dist/icons
+          
+          # Spoločné súbory hlavného webu
+          cp styles.css dist/styles.css
+          cp app.js dist/app.js
 
           # Nový oddelený WEB
           cp web/index.html dist/web/index.html
