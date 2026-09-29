@@ -430,19 +430,5 @@ if ("serviceWorker" in navigator) {
   });
 }
 </script>
-<script>
-if (new URLSearchParams(location.search).get("install") === "1") {
-  window.addEventListener("load", () => {
-    const b = document.getElementById("installPassportPwa");
-    if (b) {
-      b.scrollIntoView({behavior:"smooth", block:"center"});
-      b.animate(
-        [{transform:"scale(1)"},{transform:"scale(1.035)"},{transform:"scale(1)"}],
-        {duration:700, iterations:2}
-      );
-    }
-  });
-}
-</script>
 </body>
 </html>
