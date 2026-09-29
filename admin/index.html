@@ -1608,12 +1608,41 @@ function render() {
     trips.length;
 
 
+  const statusRank = { current:0, planned:1, completed:2 };
+
   const list =
-    filter === "all"
-      ? trips
+    (filter === "all"
+      ? [...trips]
       : trips.filter(
           x => x.status === filter
-        );
+        )
+    ).sort((a, b) => {
+      if (filter === "all") {
+        const rankDiff =
+          (statusRank[a.status] ?? 9) -
+          (statusRank[b.status] ?? 9);
+
+        if (rankDiff) return rankDiff;
+      }
+
+      if (a.status === "planned" && b.status === "planned") {
+        const orderA = Number.isFinite(Number(a.sort_order))
+          ? Number(a.sort_order)
+          : Number.MAX_SAFE_INTEGER;
+        const orderB = Number.isFinite(Number(b.sort_order))
+          ? Number(b.sort_order)
+          : Number.MAX_SAFE_INTEGER;
+
+        if (orderA !== orderB) return orderA - orderB;
+        return Number(a.id || 0) - Number(b.id || 0);
+      }
+
+      if (a.status === "completed" && b.status === "completed") {
+        return String(b.trip_date || "").localeCompare(String(a.trip_date || ""));
+      }
+
+      return 0;
+    });
 
 
   $("tripGrid").innerHTML =
@@ -1637,6 +1666,24 @@ function render() {
               data-edit="${t.id}"
             >
               Upraviť
+            </button>
+
+            <button
+              class="btn ghost"
+              data-move="${t.id}"
+              data-direction="up"
+              title="Posunúť vyššie"
+            >
+              ↑ Vyššie
+            </button>
+
+            <button
+              class="btn ghost"
+              data-move="${t.id}"
+              data-direction="down"
+              title="Posunúť nižšie"
+            >
+              ↓ Nižšie
             </button>
 
             <button
@@ -2528,6 +2575,35 @@ async e => {
 
       await closeQrForTrip(
         b.dataset.qrClose
+      );
+
+      return;
+    }
+
+
+    // --------------------------------------------------------
+    // PORADIE PLÁNOVANÝCH VÝLETOV
+    // --------------------------------------------------------
+
+    if (b.dataset.move) {
+
+      b.disabled = true;
+
+      await api(
+        `/api/admin/trips/${b.dataset.move}/move`,
+        {
+          method:"POST",
+          body:{
+            direction:b.dataset.direction
+          }
+        }
+      );
+
+      await loadTrips();
+
+      notice(
+        "Poradie plánovaných výletov bolo zmenené.",
+        "ok"
       );
 
       return;
