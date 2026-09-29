@@ -5,18 +5,8 @@ const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1501785888041-af3ef285b470?auto=format&fit=crop&w=1100&q=88";
 
 const MONTHS = [
-  "JAN",
-  "FEB",
-  "MAR",
-  "APR",
-  "MÁJ",
-  "JÚN",
-  "JÚL",
-  "AUG",
-  "SEP",
-  "OKT",
-  "NOV",
-  "DEC"
+  "JAN", "FEB", "MAR", "APR", "MÁJ", "JÚN",
+  "JÚL", "AUG", "SEP", "OKT", "NOV", "DEC"
 ];
 
 const DIFFICULTY = {
@@ -25,36 +15,15 @@ const DIFFICULTY = {
   hard: "ŤAŽKÁ"
 };
 
-const STATUS = {
-  planned: "PLÁNOVANÝ",
-  current: "AKTUÁLNY",
-  completed: "USKUTOČNENÝ"
-};
-
 
 // =====================================================
-// POMOCNÉ FUNKCIE
+// DÁTUMY
 // =====================================================
-
-function text(id, value) {
-  const element =
-    document.getElementById(id);
-
-  if (element) {
-    element.textContent = value;
-  }
-}
-
 
 function parseTripDate(value) {
-  if (!value) {
-    return null;
-  }
+  if (!value) return null;
 
-  const parts =
-    String(value)
-      .split("-")
-      .map(Number);
+  const parts = value.split("-").map(Number);
 
   if (
     parts.length !== 3 ||
@@ -63,32 +32,16 @@ function parseTripDate(value) {
     return null;
   }
 
-  const date =
-    new Date(
-      parts[0],
-      parts[1] - 1,
-      parts[2]
-    );
-
-  if (Number.isNaN(date.getTime())) {
-    return null;
-  }
-
-  return date;
-}
-
-
-function dateTimestamp(value) {
-  return (
-    parseTripDate(value)?.getTime() ??
-    Number.POSITIVE_INFINITY
+  return new Date(
+    parts[0],
+    parts[1] - 1,
+    parts[2]
   );
 }
 
 
 function longDate(value) {
-  const date =
-    parseTripDate(value);
+  const date = parseTripDate(value);
 
   if (!date) {
     return "Dátum bude doplnený";
@@ -106,28 +59,8 @@ function longDate(value) {
 }
 
 
-function shortDate(value) {
-  const date =
-    parseTripDate(value);
-
-  if (!date) {
-    return "Dátum bude doplnený";
-  }
-
-  return new Intl.DateTimeFormat(
-    "sk-SK",
-    {
-      day: "numeric",
-      month: "numeric",
-      year: "numeric"
-    }
-  ).format(date);
-}
-
-
 function headerDate(value) {
-  const date =
-    parseTripDate(value);
+  const date = parseTripDate(value);
 
   if (!date) {
     return "DÁTUM BUDE DOPLNENÝ";
@@ -147,127 +80,43 @@ function headerDate(value) {
 }
 
 
+// =====================================================
+// NÁROČNOSŤ
+// =====================================================
+
 function difficulty(value) {
   return (
     DIFFICULTY[value] ||
-    String(value || "—")
-      .toLocaleUpperCase("sk-SK")
-  );
-}
-
-
-function statusLabel(value) {
-  return (
-    STATUS[value] ||
-    String(value || "")
-      .toLocaleUpperCase("sk-SK")
-  );
-}
-
-
-function tripUrl(trip) {
-  return (
-    `/turisticky-kruzok/vylet/?id=` +
-    encodeURIComponent(trip.id)
-  );
-}
-
-
-function tripTime(trip) {
-  if (
-    trip.time_from &&
-    trip.time_to
-  ) {
-    return (
-      `${trip.time_from} – ${trip.time_to}`
-    );
-  }
-
-  if (trip.time_from) {
-    return trip.time_from;
-  }
-
-  if (trip.time_to) {
-    return trip.time_to;
-  }
-
-  return "Čas bude doplnený";
-}
-
-
-function tripImage(trip) {
-  return (
-    trip.image_url ||
-    FALLBACK_IMAGE
-  );
-}
-
-
-function makeCardAccessible(
-  article,
-  trip
-) {
-  const openTrip = () => {
-    window.location.href =
-      tripUrl(trip);
-  };
-
-  article.setAttribute(
-    "role",
-    "link"
-  );
-
-  article.setAttribute(
-    "tabindex",
-    "0"
-  );
-
-  article.addEventListener(
-    "click",
-    openTrip
-  );
-
-  article.addEventListener(
-    "keydown",
-    event => {
-      if (
-        event.key === "Enter" ||
-        event.key === " "
-      ) {
-        event.preventDefault();
-        openTrip();
-      }
-    }
+    String(value || "—").toLocaleUpperCase("sk-SK")
   );
 }
 
 
 // =====================================================
-// NAJBLIŽŠÍ / AKTUÁLNY VÝLET
+// POMOCNÁ FUNKCIA
 // =====================================================
 
-function renderMainTrip(trip) {
+function text(id, value) {
+  const element = document.getElementById(id);
+
+  if (element) {
+    element.textContent = value;
+  }
+}
+
+
+// =====================================================
+// NAJBLIŽŠÍ VÝLET
+// =====================================================
+
+function renderNextTrip(trip) {
+
   const detailButton =
-    document.getElementById(
-      "nextTripDetailButton"
-    );
-
-  const statusBadge =
-    document.getElementById(
-      "nextTripStatus"
-    );
-
-  const image =
-    document.getElementById(
-      "nextTripImage"
-    );
+    document.getElementById("nextTripDetailButton");
 
 
+  // Ak zatiaľ nemáme žiadny plánovaný výlet
   if (!trip) {
-    text(
-      "nextTripSectionTitle",
-      "🥾  NAJBLIŽŠÍ VÝLET"
-    );
 
     text(
       "nextTripHeaderDate",
@@ -296,7 +145,7 @@ function renderMainTrip(trip) {
 
     text(
       "nextTripDistance",
-      "🥾 Vzdialenosť bude doplnená"
+      "🥾 Trasa bude doplnená"
     );
 
     text(
@@ -310,28 +159,29 @@ function renderMainTrip(trip) {
     );
 
     if (detailButton) {
-      detailButton.hidden = true;
-    }
-
-    if (statusBadge) {
-      statusBadge.hidden = true;
+      detailButton.style.display = "none";
     }
 
     return;
   }
 
 
-  const isCurrent =
-    trip.status === "current";
+  // =====================================================
+  // ODKAZ NA DETAIL VÝLETU
+  // =====================================================
+
+  if (detailButton) {
+
+    detailButton.style.display = "inline-block";
+
+    detailButton.href =
+      `/turisticky-kruzok/vylet/?id=${encodeURIComponent(trip.id)}`;
+  }
 
 
-  text(
-    "nextTripSectionTitle",
-    isCurrent
-      ? "🥾  AKTUÁLNY VÝLET"
-      : "🥾  NAJBLIŽŠÍ VÝLET"
-  );
-
+  // =====================================================
+  // DÁTUM V ZELENEJ HLAVIČKE
+  // =====================================================
 
   text(
     "nextTripHeaderDate",
@@ -339,11 +189,19 @@ function renderMainTrip(trip) {
   );
 
 
+  // =====================================================
+  // NÁZOV
+  // =====================================================
+
   text(
     "nextTripName",
     trip.name || "Výlet"
   );
 
+
+  // =====================================================
+  // TRASA
+  // =====================================================
 
   text(
     "nextTripRoute",
@@ -354,37 +212,80 @@ function renderMainTrip(trip) {
   );
 
 
+  // =====================================================
+  // DÁTUM
+  // =====================================================
+
   text(
     "nextTripDate",
     `📅 ${longDate(trip.trip_date)}`
   );
 
 
+  // =====================================================
+  // ČAS
+  // =====================================================
+
+  let tripTime =
+    "Čas bude doplnený";
+
+  if (
+    trip.time_from &&
+    trip.time_to
+  ) {
+
+    tripTime =
+      `${trip.time_from} – ${trip.time_to}`;
+
+  } else if (trip.time_from) {
+
+    tripTime =
+      trip.time_from;
+
+  } else if (trip.time_to) {
+
+    tripTime =
+      trip.time_to;
+  }
+
+
   text(
     "nextTripTime",
-    `🕘 ${tripTime(trip)}`
+    `🕘 ${tripTime}`
   );
 
+
+  // =====================================================
+  // VZDIALENOSŤ
+  // =====================================================
 
   text(
     "nextTripDistance",
     `🥾 ${
       trip.distance_km != null
-        ? `${trip.distance_km} km`
+        ? trip.distance_km + " km"
         : "Vzdialenosť bude doplnená"
     }`
   );
 
 
+  // =====================================================
+  // PREVÝŠENIE
+  // =====================================================
+
   text(
     "nextTripElevation",
     `↗ ${
       trip.elevation_m != null
-        ? `${trip.elevation_m} m prevýšenie`
+        ? trip.elevation_m + " m prevýšenie"
         : "Prevýšenie bude doplnené"
     }`
   );
 
+
+  // =====================================================
+  // NÁROČNOSŤ
+  // =====================================================
 
   text(
     "nextTripDifficulty",
@@ -392,27 +293,20 @@ function renderMainTrip(trip) {
   );
 
 
+  // =====================================================
+  // OBRÁZOK
+  // =====================================================
+
+  const image =
+    document.getElementById("nextTripImage");
+
   if (image) {
+
     image.style.backgroundImage =
-      `url("${tripImage(trip)}")`;
-  }
-
-
-  if (detailButton) {
-    detailButton.hidden = false;
-    detailButton.href =
-      tripUrl(trip);
-  }
-
-
-  if (statusBadge) {
-    statusBadge.textContent =
-      statusLabel(trip.status);
-
-    statusBadge.className =
-      `tripStatusBadge ${trip.status}`;
-
-    statusBadge.hidden = false;
+      `url("${
+        trip.image_url ||
+        FALLBACK_IMAGE
+      }")`;
   }
 }
 
@@ -421,15 +315,15 @@ function renderMainTrip(trip) {
 // KARTA PLÁNOVANÉHO VÝLETU
 // =====================================================
 
-function createPlannedCard(trip) {
+function tripCard(trip) {
+
   const article =
     document.createElement("article");
 
-  makeCardAccessible(
-    article,
-    trip
-  );
 
+  // =====================================================
+  // OBRÁZOK
+  // =====================================================
 
   const photo =
     document.createElement("div");
@@ -438,8 +332,15 @@ function createPlannedCard(trip) {
     "cardPhoto";
 
   photo.style.backgroundImage =
-    `url("${tripImage(trip)}")`;
+    `url("${
+      trip.image_url ||
+      FALLBACK_IMAGE
+    }")`;
 
+
+  // =====================================================
+  // DÁTUM NA OBRÁZKU
+  // =====================================================
 
   const date =
     parseTripDate(
@@ -447,12 +348,13 @@ function createPlannedCard(trip) {
     );
 
 
-  const dateBox =
+  const time =
     document.createElement("time");
 
 
   const day =
     document.createElement("b");
+
 
   day.textContent =
     date
@@ -460,10 +362,10 @@ function createPlannedCard(trip) {
       : "—";
 
 
-  dateBox.appendChild(day);
+  time.appendChild(day);
 
 
-  dateBox.appendChild(
+  time.appendChild(
     document.createTextNode(
       date
         ? MONTHS[date.getMonth()]
@@ -472,10 +374,12 @@ function createPlannedCard(trip) {
   );
 
 
-  photo.appendChild(
-    dateBox
-  );
+  photo.appendChild(time);
 
+
+  // =====================================================
+  // NÁZOV
+  // =====================================================
 
   const name =
     document.createElement("h3");
@@ -483,6 +387,10 @@ function createPlannedCard(trip) {
   name.textContent =
     trip.name || "Výlet";
 
+
+  // =====================================================
+  // TRASA
+  // =====================================================
 
   const route =
     document.createElement("p");
@@ -494,101 +402,73 @@ function createPlannedCard(trip) {
     }`;
 
 
-  const meta =
+  // =====================================================
+  // NÁROČNOSŤ
+  // =====================================================
+
+  const diff =
     document.createElement("small");
 
-  meta.textContent =
+  diff.textContent =
     `⛰ ${difficulty(
       trip.difficulty
     )} NÁROČNOSŤ`;
+
+
+  // =====================================================
+  // CELÁ KARTA BUDE KLIKATEĽNÁ
+  // =====================================================
+
+  article.style.cursor =
+    "pointer";
+
+  article.setAttribute(
+    "role",
+    "link"
+  );
+
+  article.setAttribute(
+    "tabindex",
+    "0"
+  );
+
+
+  const openTrip = () => {
+
+    window.location.href =
+      `/turisticky-kruzok/vylet/?id=${encodeURIComponent(trip.id)}`;
+  };
+
+
+  article.addEventListener(
+    "click",
+    openTrip
+  );
+
+
+  article.addEventListener(
+    "keydown",
+    event => {
+
+      if (
+        event.key === "Enter" ||
+        event.key === " "
+      ) {
+
+        event.preventDefault();
+
+        openTrip();
+      }
+    }
+  );
 
 
   article.append(
     photo,
     name,
     route,
-    meta
+    diff
   );
-
-
-  return article;
-}
-
-
-// =====================================================
-// KARTA USKUTOČNENÉHO VÝLETU
-// =====================================================
-
-function createCompletedCard(trip) {
-  const article =
-    document.createElement("article");
-
-  makeCardAccessible(
-    article,
-    trip
-  );
-
-
-  const photo =
-    document.createElement("div");
-
-  photo.className =
-    "donePhoto";
-
-  photo.style.backgroundImage =
-    `url("${tripImage(trip)}")`;
-
-
-  const date =
-    document.createElement("span");
-
-  date.className =
-    "doneDate";
-
-  date.textContent =
-    shortDate(
-      trip.trip_date
-    );
-
-
-  const name =
-    document.createElement("h3");
-
-  name.textContent =
-    trip.name || "Výlet";
-
-
-  const info =
-    document.createElement("p");
-
-  const pieces = [];
-
-  if (trip.distance_km != null) {
-    pieces.push(
-      `${trip.distance_km} km`
-    );
-  }
-
-  if (trip.elevation_m != null) {
-    pieces.push(
-      `↗ ${trip.elevation_m} m`
-    );
-  }
-
-  info.textContent =
-    pieces.join(" · ");
-
-
-  article.append(
-    photo,
-    date,
-    name
-  );
-
-
-  if (pieces.length > 0) {
-    article.appendChild(info);
-  }
 
 
   return article;
@@ -600,240 +480,87 @@ function createCompletedCard(trip) {
 // =====================================================
 
 function renderPlannedTrips(
-  plannedTrips,
-  mainTrip
+  trips,
+  nextTrip
 ) {
+
   const container =
     document.getElementById(
       "plannedTrips"
     );
 
-  if (!container) {
-    return;
-  }
+
+  if (!container) return;
+
 
   container.replaceChildren();
 
 
+  /*
+   * Najbližší výlet je už zobrazený
+   * vo veľkej karte.
+   *
+   * Preto ho v sekcii plánovaných
+   * výletov druhýkrát nezobrazujeme.
+   */
+
   const remaining =
-    plannedTrips.filter(
+    trips.filter(
       trip =>
-        Number(trip.id) !==
-        Number(mainTrip?.id)
+        trip.id !== nextTrip?.id
     );
 
 
   if (remaining.length === 0) {
-    const message =
+
+    const paragraph =
       document.createElement("p");
 
-    message.className =
-      "emptyMessage";
 
-    message.textContent =
+    paragraph.textContent =
       "Ďalšie plánované výlety zatiaľ nie sú zverejnené.";
 
+
+    paragraph.style.padding =
+      "0 14px";
+
+
     container.appendChild(
-      message
+      paragraph
     );
+
 
     return;
   }
 
+
+  /*
+   * Na titulke zobrazíme
+   * maximálne 4 ďalšie výlety.
+   */
 
   remaining
     .slice(0, 4)
     .forEach(
       trip => {
+
         container.appendChild(
-          createPlannedCard(trip)
+          tripCard(trip)
         );
+
       }
     );
 }
 
 
 // =====================================================
-// USKUTOČNENÉ VÝLETY
-// =====================================================
-
-function renderCompletedTrips(
-  completedTrips
-) {
-  const container =
-    document.getElementById(
-      "completedTrips"
-    );
-
-  if (!container) {
-    return;
-  }
-
-  container.replaceChildren();
-
-
-  if (
-    completedTrips.length === 0
-  ) {
-    const message =
-      document.createElement("p");
-
-    message.className =
-      "emptyMessage";
-
-    message.textContent =
-      "Zatiaľ nemáme žiadny uskutočnený výlet.";
-
-    container.appendChild(
-      message
-    );
-
-    return;
-  }
-
-
-  completedTrips
-    .slice(0, 4)
-    .forEach(
-      trip => {
-        container.appendChild(
-          createCompletedCard(trip)
-        );
-      }
-    );
-}
-
-
-// =====================================================
-// ŠTATISTIKY
-// =====================================================
-
-function renderStats(
-  completedTrips
-) {
-  text(
-    "completedTripsCount",
-    String(completedTrips.length)
-  );
-
-
-  const totalDistance =
-    completedTrips.reduce(
-      (sum, trip) => {
-        const distance =
-          Number(
-            trip.distance_km
-          );
-
-        return (
-          sum +
-          (
-            Number.isFinite(distance)
-              ? distance
-              : 0
-          )
-        );
-      },
-      0
-    );
-
-
-  const formattedDistance =
-    Number.isInteger(totalDistance)
-      ? String(totalDistance)
-      : totalDistance
-          .toFixed(1)
-          .replace(".", ",");
-
-
-  text(
-    "completedDistance",
-    `${formattedDistance} km`
-  );
-}
-
-
-// =====================================================
-// CHYBOVÝ STAV
-// =====================================================
-
-function renderLoadError() {
-  text(
-    "nextTripHeaderDate",
-    "VÝLETY SA NEPODARILO NAČÍTAŤ"
-  );
-
-  text(
-    "nextTripName",
-    "Údaje sú dočasne nedostupné"
-  );
-
-  text(
-    "nextTripRoute",
-    "📍 Skús stránku načítať znova."
-  );
-
-
-  const detailButton =
-    document.getElementById(
-      "nextTripDetailButton"
-    );
-
-  if (detailButton) {
-    detailButton.hidden = true;
-  }
-
-
-  const statusBadge =
-    document.getElementById(
-      "nextTripStatus"
-    );
-
-  if (statusBadge) {
-    statusBadge.hidden = true;
-  }
-
-
-  const planned =
-    document.getElementById(
-      "plannedTrips"
-    );
-
-  if (planned) {
-    planned.innerHTML =
-      '<p class="emptyMessage errorMessage">Plánované výlety sa momentálne nepodarilo načítať.</p>';
-  }
-
-
-  const completed =
-    document.getElementById(
-      "completedTrips"
-    );
-
-  if (completed) {
-    completed.innerHTML =
-      '<p class="emptyMessage errorMessage">Uskutočnené výlety sa momentálne nepodarilo načítať.</p>';
-  }
-
-
-  text(
-    "completedTripsCount",
-    "—"
-  );
-
-  text(
-    "completedDistance",
-    "— km"
-  );
-}
-
-
-// =====================================================
-// NAČÍTANIE VÝLETOV
+// NAČÍTANIE DÁT Z CLOUDFLARE WORKERA
 // =====================================================
 
 async function loadTrips() {
+
   try {
+
     const response =
       await fetch(
         TRIPS_API,
@@ -847,6 +574,7 @@ async function loadTrips() {
 
 
     if (!response.ok) {
+
       throw new Error(
         `API vrátilo HTTP ${response.status}`
       );
@@ -858,127 +586,133 @@ async function loadTrips() {
 
 
     if (
-      data?.ok !== true ||
+      !data.ok ||
       !Array.isArray(data.trips)
     ) {
+
       throw new Error(
         "API vrátilo neočakávaný formát dát."
       );
     }
 
 
-    const allTrips =
-      data.trips;
+    // =====================================================
+    // IBA PLÁNOVANÉ VÝLETY
+    // =====================================================
 
-
-    // ---------------------------------------------
-    // AKTUÁLNY VÝLET
-    // ---------------------------------------------
-
-    const currentTrips =
-      allTrips
+    const planned =
+      data.trips
         .filter(
           trip =>
-            trip.status ===
-            "current"
+            trip.status === "planned"
         )
         .sort(
-          (a, b) =>
-            dateTimestamp(
-              a.trip_date
-            ) -
-            dateTimestamp(
-              b.trip_date
-            )
+          (a, b) => {
+
+            const orderA =
+              Number.isFinite(Number(a.sort_order))
+                ? Number(a.sort_order)
+                : Number.MAX_SAFE_INTEGER;
+
+            const orderB =
+              Number.isFinite(Number(b.sort_order))
+                ? Number(b.sort_order)
+                : Number.MAX_SAFE_INTEGER;
+
+            if (orderA !== orderB) {
+              return orderA - orderB;
+            }
+
+            return Number(a.id || 0) - Number(b.id || 0);
+          }
         );
 
 
-    // ---------------------------------------------
-    // PLÁNOVANÉ
-    // ---------------------------------------------
+    // =====================================================
+    // NAJBLIŽŠÍ VÝLET
+    // =====================================================
 
-    const plannedTrips =
-      allTrips
-        .filter(
-          trip =>
-            trip.status ===
-            "planned"
-        )
-        .sort(
-          (a, b) =>
-            dateTimestamp(
-              a.trip_date
-            ) -
-            dateTimestamp(
-              b.trip_date
-            )
-        );
+    const nextTrip =
+      planned[0] || null;
 
 
-    // ---------------------------------------------
-    // USKUTOČNENÉ
-    // ---------------------------------------------
-
-    const completedTrips =
-      allTrips
-        .filter(
-          trip =>
-            trip.status ===
-            "completed"
-        )
-        .sort(
-          (a, b) =>
-            dateTimestamp(
-              b.trip_date
-            ) -
-            dateTimestamp(
-              a.trip_date
-            )
-        );
-
-
-    /*
-     * Ak administrátor označil výlet
-     * ako current, má prioritu.
-     *
-     * Ak current neexistuje,
-     * použijeme prvý planned.
-     */
-
-    const mainTrip =
-      currentTrips[0] ||
-      plannedTrips[0] ||
-      null;
-
-
-    renderMainTrip(
-      mainTrip
+    renderNextTrip(
+      nextTrip
     );
 
 
     renderPlannedTrips(
-      plannedTrips,
-      mainTrip
+      planned,
+      nextTrip
     );
 
-
-    renderCompletedTrips(
-      completedTrips
-    );
-
-
-    renderStats(
-      completedTrips
-    );
   }
 
   catch (error) {
+
     console.error(
       "Nepodarilo sa načítať výlety:",
       error
     );
 
-    renderLoadError();
+
+    text(
+      "nextTripHeaderDate",
+      "VÝLETY SA NEPODARILO NAČÍTAŤ"
+    );
+
+
+    text(
+      "nextTripName",
+      "Údaje sú dočasne nedostupné"
+    );
+
+
+    text(
+      "nextTripRoute",
+      "📍 Skús stránku načítať znova."
+    );
+
+
+    const detailButton =
+      document.getElementById(
+        "nextTripDetailButton"
+      );
+
+
+    if (detailButton) {
+      detailButton.style.display =
+        "none";
+    }
+
+
+    const container =
+      document.getElementById(
+        "plannedTrips"
+      );
+
+
+    if (container) {
+
+      container.replaceChildren();
+
+
+      const paragraph =
+        document.createElement("p");
+
+
+      paragraph.textContent =
+        "Plánované výlety sa momentálne nepodarilo načítať.";
+
+
+      paragraph.style.padding =
+        "0 14px";
+
+
+      container.appendChild(
+        paragraph
+      );
+    }
   }
 }
 
