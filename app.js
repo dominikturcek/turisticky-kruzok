@@ -479,76 +479,69 @@ function tripCard(trip) {
 // PLÁNOVANÉ VÝLETY
 // =====================================================
 
-function renderPlannedTrips(
-  trips,
-  nextTrip
-) {
+function renderPlannedTrips(trips) {
 
   const container =
-    document.getElementById(
-      "plannedTrips"
-    );
-
+    document.getElementById("plannedTrips");
 
   if (!container) return;
 
-
   container.replaceChildren();
 
-
-  /*
-   * Najbližší výlet je už zobrazený
-   * vo veľkej karte.
-   *
-   * Preto ho v sekcii plánovaných
-   * výletov druhýkrát nezobrazujeme.
-   */
-
-  const remaining =
-    trips.filter(
-      trip =>
-        trip.id !== nextTrip?.id
-    );
-
-
-  if (remaining.length === 0) {
-
+  if (trips.length === 0) {
     const paragraph =
       document.createElement("p");
-
 
     paragraph.textContent =
       "Ďalšie plánované výlety zatiaľ nie sú zverejnené.";
 
+    paragraph.style.padding =
+      "0 14px";
+
+    container.appendChild(paragraph);
+    return;
+  }
+
+  trips.forEach(trip => {
+    container.appendChild(
+      tripCard(trip)
+    );
+  });
+}
+
+
+// =====================================================
+// USKUTOČNENÉ VÝLETY
+// =====================================================
+
+function renderCompletedTrips(trips) {
+
+  const container =
+    document.getElementById("completedTrips");
+
+  if (!container) return;
+
+  container.replaceChildren();
+
+  if (trips.length === 0) {
+    const paragraph =
+      document.createElement("p");
+
+    paragraph.textContent =
+      "Zatiaľ nie sú evidované žiadne uskutočnené výlety.";
 
     paragraph.style.padding =
       "0 14px";
 
-
-    container.appendChild(
-      paragraph
-    );
-
-
+    container.appendChild(paragraph);
     return;
   }
 
-
-  /*
-   * Na titulke zobrazíme
-   * maximálne 4 ďalšie výlety.
-   */
-
-  remaining
-    .forEach(
-      trip => {
-
-        container.appendChild(
-          tripCard(trip)
-        );
-
-      }
+  trips.forEach(trip => {
+    container.appendChild(
+      tripCard(trip)
     );
+  });
 }
 
 
@@ -629,7 +622,7 @@ async function loadTrips() {
 
 
     // =====================================================
-    // AKTUÁLNY / NAJBLIŽŠÍ VÝLET
+    // AKTUÁLNY VÝLET
     // =====================================================
 
     const currentTrip =
@@ -637,20 +630,27 @@ async function loadTrips() {
         trip => trip.status === "current"
       ) || null;
 
-    const nextTrip =
-      currentTrip || planned[0] || null;
-
-
+    // Veľká karta zobrazuje výhradne výlet,
+    // ktorý je v administrácii označený ako AKTUÁLNY.
     renderNextTrip(
-      nextTrip
+      currentTrip
+    );
+
+    // Sekcia PLÁNOVANÉ zobrazuje všetky planned výlety
+    // v ručne nastavenom sort_order.
+    renderPlannedTrips(
+      planned
     );
 
 
-    // Aktuálny výlet je vo veľkej karte.
-    // V zozname nižšie ostávajú všetky ostatné plánované výlety.
-    renderPlannedTrips(
-      planned,
-      currentTrip ? null : nextTrip
+    // =====================================================
+    // USKUTOČNENÉ VÝLETY
+    // =====================================================
+
+    renderCompletedTrips(
+      data.trips.filter(
+        trip => trip.status === "completed"
+      )
     );
 
   }
