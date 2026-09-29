@@ -145,6 +145,13 @@ const DOMAIN="@zsnrudno.sk";
 const API_SCOPE="api://572fce68-57b5-44b8-a094-ad758a5043ad/access_as_user";
 const API_BASE="https://turisticky-kruzok-api.dominikturcek.workers.dev";
 
+let passportInstallPrompt = null;
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  passportInstallPrompt = event;
+});
+
 const msal=new PublicClientApplication({
   auth:{clientId:"dbe83225-f1c9-4d01-9258-a32eef290d5a",authority:"https://login.microsoftonline.com/9c407241-8886-476e-a9ec-1e588209bcff",redirectUri:REDIRECT,postLogoutRedirectUri:HOME},
   cache:{cacheLocation:BrowserCacheLocation.LocalStorage}
@@ -392,18 +399,12 @@ try{
   if(checkinToken)setCheckinPanel("fail","Stránku sa nepodarilo načítať",e.message||"Skús stránku obnoviť.");
 }
 
-let passportInstallPrompt = null;
 const passportInstallButton = document.getElementById("installPassportPwa");
 const isMobileDevice = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
 
 if (passportInstallButton && !isMobileDevice) {
   passportInstallButton.style.display = "none";
 }
-
-window.addEventListener("beforeinstallprompt", event => {
-  event.preventDefault();
-  passportInstallPrompt = event;
-});
 
 passportInstallButton?.addEventListener("click", async () => {
   const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
