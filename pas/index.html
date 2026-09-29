@@ -397,41 +397,47 @@ try{
 
 <script>
 let passportInstallPrompt = null;
-const passportInstallButton = document.getElementById("installPassportPwa");
 
-window.addEventListener("beforeinstallprompt", event => {
+window.addEventListener("beforeinstallprompt", (event) => {
   event.preventDefault();
   passportInstallPrompt = event;
+  console.log("PAS: beforeinstallprompt pripravený");
 });
 
-passportInstallButton?.addEventListener("click", async () => {
+document.getElementById("installPassportPwa").onclick = async function () {
   const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
+
   if (isiOS) {
-    alert("Na iPhone/iPad otvor Zdieľať a vyber „Pridať na plochu“. Použije sa ikona PAS.");
+    alert("Na iPhone/iPad otvor Zdieľať a vyber „Pridať na plochu“.");
     return;
   }
+
   if (!passportInstallPrompt) {
-    alert("Chrome momentálne neponúka inštaláciu TURISTICKÉHO PASU. Ak už máš starú skratku alebo nainštalovaný PAS, odstráň ho, obnov stránku a skús tlačidlo znova.");
+    alert("Inštalácia ešte nie je pripravená. Obnov stránku v Chrome a skús tlačidlo znova.");
     return;
   }
-  passportInstallPrompt.prompt();
-  await passportInstallPrompt.userChoice;
-  passportInstallPrompt = null;
-});
+
+  try {
+    console.log("PAS: volám prompt()");
+    const result = await passportInstallPrompt.prompt();
+    console.log("PAS: prompt() výsledok", result);
+
+    const choice = await passportInstallPrompt.userChoice;
+    console.log("PAS: voľba používateľa", choice);
+
+    if (choice.outcome === "accepted") {
+      passportInstallPrompt = null;
+    }
+  } catch (err) {
+    console.error("PAS: chyba pri prompt()", err);
+    alert("Chrome nedokázal otvoriť inštalačné okno. Pozri Console v DevTools.");
+  }
+};
 
 window.addEventListener("appinstalled", () => {
+  console.log("PAS: aplikácia nainštalovaná");
   passportInstallPrompt = null;
 });
-</script>
-
-<script>
-(function(){
-  const ua = navigator.userAgent || "";
-  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
-                 (navigator.userAgentData && navigator.userAgentData.mobile === true);
-  const button = document.getElementById("installPassportPwa");
-  if (button && !mobile) button.style.display = "none";
-})();
 </script>
 
 <script>
