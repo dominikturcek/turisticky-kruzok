@@ -567,8 +567,7 @@ async function loadTrips() {
           cache: "no-store",
           headers: {
             Accept:
-              "application/json",
-            "Cache-Control": "no-cache"
+              "application/json"
           }
         }
       );
