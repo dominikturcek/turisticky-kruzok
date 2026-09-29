@@ -540,7 +540,6 @@ function renderPlannedTrips(
    */
 
   remaining
-    .slice(0, 4)
     .forEach(
       trip => {
 
@@ -565,9 +564,11 @@ async function loadTrips() {
       await fetch(
         TRIPS_API,
         {
+          cache: "no-store",
           headers: {
             Accept:
-              "application/json"
+              "application/json",
+            "Cache-Control": "no-cache"
           }
         }
       );
@@ -629,11 +630,16 @@ async function loadTrips() {
 
 
     // =====================================================
-    // NAJBLIŽŠÍ VÝLET
+    // AKTUÁLNY / NAJBLIŽŠÍ VÝLET
     // =====================================================
 
+    const currentTrip =
+      data.trips.find(
+        trip => trip.status === "current"
+      ) || null;
+
     const nextTrip =
-      planned[0] || null;
+      currentTrip || planned[0] || null;
 
 
     renderNextTrip(
@@ -641,9 +647,11 @@ async function loadTrips() {
     );
 
 
+    // Aktuálny výlet je vo veľkej karte.
+    // V zozname nižšie ostávajú všetky ostatné plánované výlety.
     renderPlannedTrips(
       planned,
-      nextTrip
+      currentTrip ? null : nextTrip
     );
 
   }
