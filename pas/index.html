@@ -145,13 +145,6 @@ const DOMAIN="@zsnrudno.sk";
 const API_SCOPE="api://572fce68-57b5-44b8-a094-ad758a5043ad/access_as_user";
 const API_BASE="https://turisticky-kruzok-api.dominikturcek.workers.dev";
 
-let passportInstallPrompt = null;
-
-window.addEventListener("beforeinstallprompt", event => {
-  event.preventDefault();
-  passportInstallPrompt = event;
-});
-
 const msal=new PublicClientApplication({
   auth:{clientId:"dbe83225-f1c9-4d01-9258-a32eef290d5a",authority:"https://login.microsoftonline.com/9c407241-8886-476e-a9ec-1e588209bcff",redirectUri:REDIRECT,postLogoutRedirectUri:HOME},
   cache:{cacheLocation:BrowserCacheLocation.LocalStorage}
@@ -399,12 +392,17 @@ try{
   if(checkinToken)setCheckinPanel("fail","Stránku sa nepodarilo načítať",e.message||"Skús stránku obnoviť.");
 }
 
-const passportInstallButton = document.getElementById("installPassportPwa");
-const isMobileDevice = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+</script>
 
-if (passportInstallButton && !isMobileDevice) {
-  passportInstallButton.style.display = "none";
-}
+
+<script>
+let passportInstallPrompt = null;
+const passportInstallButton = document.getElementById("installPassportPwa");
+
+window.addEventListener("beforeinstallprompt", event => {
+  event.preventDefault();
+  passportInstallPrompt = event;
+});
 
 passportInstallButton?.addEventListener("click", async () => {
   const isiOS = /iphone|ipad|ipod/i.test(navigator.userAgent);
@@ -413,13 +411,27 @@ passportInstallButton?.addEventListener("click", async () => {
     return;
   }
   if (!passportInstallPrompt) {
-    alert("Ak sa systémové okno inštalácie neotvorilo, v Chrome otvor menu ⋮ → „Inštalácia a vytvorenie odkazu“ → „Inštalovať“. Turistický pas sa nainštaluje s ikonou PAS.");
+    alert("Chrome momentálne neponúka inštaláciu TURISTICKÉHO PASU. Ak už máš starú skratku alebo nainštalovaný PAS, odstráň ho, obnov stránku a skús tlačidlo znova.");
     return;
   }
   passportInstallPrompt.prompt();
   await passportInstallPrompt.userChoice;
   passportInstallPrompt = null;
 });
+
+window.addEventListener("appinstalled", () => {
+  passportInstallPrompt = null;
+});
+</script>
+
+<script>
+(function(){
+  const ua = navigator.userAgent || "";
+  const mobile = /Android|iPhone|iPad|iPod|Mobile/i.test(ua) ||
+                 (navigator.userAgentData && navigator.userAgentData.mobile === true);
+  const button = document.getElementById("installPassportPwa");
+  if (button && !mobile) button.style.display = "none";
+})();
 </script>
 
 <script>
