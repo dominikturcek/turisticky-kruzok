@@ -394,6 +394,11 @@ try{
 
 let passportInstallPrompt = null;
 const passportInstallButton = document.getElementById("installPassportPwa");
+const isMobileDevice = /android|iphone|ipad|ipod/i.test(navigator.userAgent);
+
+if (passportInstallButton && !isMobileDevice) {
+  passportInstallButton.style.display = "none";
+}
 
 window.addEventListener("beforeinstallprompt", event => {
   event.preventDefault();
@@ -407,7 +412,7 @@ passportInstallButton?.addEventListener("click", async () => {
     return;
   }
   if (!passportInstallPrompt) {
-    alert("Chrome momentálne neponúka inštaláciu Turistického pasu. Ak už máš starú skratku, odstráň ju, obnov túto stránku a skús tlačidlo znova. Nevytváraj obyčajnú skratku cez „Pridať na plochu“.");
+    alert("Ak sa systémové okno inštalácie neotvorilo, v Chrome otvor menu ⋮ → „Inštalácia a vytvorenie odkazu“ → „Inštalovať“. Turistický pas sa nainštaluje s ikonou PAS.");
     return;
   }
   passportInstallPrompt.prompt();
