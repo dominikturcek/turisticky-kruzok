@@ -280,7 +280,45 @@ function renderPassportData(data,a){
   const earned=badges.filter(b=>Number(b.earned)===1);
   $("homeBadges").innerHTML=earned.length?earned.slice(0,3).map(b=>`<div class="badge" data-show="badges"><i>${esc(b.icon||"🏅")}</i><b>${esc(b.name||"Odznak")}</b></div>`).join(""):'<div class="muted">Zatiaľ nemáš žiadny odznak.</div>';
   $("badgeGrid").innerHTML=badges.length?badges.map(b=>`<div class="badge ${Number(b.earned)===1?"":"locked"}"><i>${Number(b.earned)===1?esc(b.icon||"🏅"):"🔒"}</i><b>${esc(b.name||"Odznak")}</b><span class="muted">${Number(b.earned)===1?"Získaný":esc(b.description||"Zatiaľ nezískaný")}</span></div>`).join(""):'<div class="muted" style="grid-column:1/-1">Odznaky sa nenačítali.</div>';
-  renderBonusTasks(data.bonusTasks||[]);
+  const bonusTasks = data.bonusTasks || [];
+
+renderBonusTasks(bonusTasks);
+
+const activeBonusTasks =
+  bonusTasks.filter(t => !t.status);
+
+const bonusPromo =
+  $("bonusPromo");
+
+if (activeBonusTasks.length > 0) {
+
+  bonusPromo.style.display = "block";
+
+  bonusPromo.innerHTML = `
+    <button
+      type="button"
+      class="bonusPromoBtn"
+      data-show="bonus"
+    >
+      ⭐ Bonusové úlohy sú aktívne
+      <span>
+        Máš ${activeBonusTasks.length}
+        ${activeBonusTasks.length === 1
+          ? "bonusovú úlohu"
+          : activeBonusTasks.length < 5
+            ? "bonusové úlohy"
+            : "bonusových úloh"}
+        na splnenie · klikni sem
+      </span>
+    </button>
+  `;
+
+} else {
+
+  bonusPromo.style.display = "none";
+  bonusPromo.innerHTML = "";
+
+}
 }
 
 function breakdown(type){
