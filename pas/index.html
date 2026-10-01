@@ -124,7 +124,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 </div></section>
 <section id="detail" class="screen page"><button class="back" id="detailBack">‹ Späť</button><div id="detailbody"></div></section>
 <section id="break" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1 id="breaktitle"></h1><div class="box" id="breakbody"></div></section>
-<section id="rank" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Rebríček</h1><p class="muted">Rebríček bude napojený na databázu v ďalšej fáze.</p><div class="box"><div class="muted">Zatiaľ nie sú dostupné údaje rebríčka.</div></div></section>
+<section id="rank" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Rebríček</h1><p class="muted">Poradie členov podľa získaných bodov. Pri rovnosti bodov rozhoduje počet absolvovaných výletov, potom kilometre.</p><div id="rankList" class="box"><div class="loading">Načítavam rebríček...</div></div></section>
 <section id="rules" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Pravidlá</h1><div class="box"><h3>Body</h3><p class="muted">Body za výlet sa pripíšu po úspešnom QR check-ine. Každý výlet sa započíta iba raz.</p></div><div class="box"><h3>Kilometre a prevýšenie</h3><p class="muted">Po zaevidovaní účasti sa do pasu automaticky započítajú kilometre, prevýšenie a body daného výletu.</p></div></section>
 <section id="info" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Informácie</h1>
 <div class="box"><h3>Turistický pas</h3><p class="muted">Digitálny turistický pas zaznamenáva tvoje absolvované výlety, kilometre, prevýšenie, body, pečiatky a získané odznaky. Pas je prepojený s tvojím školským Microsoft účtom, preto sa prihlasuj vždy svojím vlastným školským účtom.</p></div>
@@ -248,6 +248,21 @@ async function loadPassport(a){
   passportData=await privateApiGet("/api/me/passport",token);
   attendedTrips=Array.isArray(passportData?.trips)?passportData.trips:[];
   renderPassportData(passportData,a);renderCurrentTrip();renderTripLists();
+}
+
+async function loadLeaderboard(){
+  const box=$("rankList");
+  if(!box)return;
+  box.innerHTML='<div class="loading">Načítavam rebríček...</div>';
+  try{
+    const data=await publicApiGet("/api/public/leaderboard");
+    const rows=Array.isArray(data?.leaderboard)?data.leaderboard:[];
+    if(!rows.length){box.innerHTML='<div class="muted">Zatiaľ nie sú dostupné údaje rebríčka.</div>';return}
+    box.innerHTML=rows.map((r,i)=>`<div class="listrow"><span><b>${i+1}. ${esc(r.display_name)}</b>${r.class_name?`<br><span class="muted">${esc(r.class_name)}</span>`:""}</span><span style="text-align:right"><b>${num(r.points)} b.</b><br><span class="muted">${num(r.trips)} výletov · ${formatKm(r.km)} km</span></span></div>`).join("");
+  }catch(e){
+    console.error(e);
+    box.innerHTML=`<div class="muted">Rebríček sa nepodarilo načítať: ${esc(e.message||String(e))}</div>`;
+  }
 }
 function renderPassportData(data,a){
   const user=data?.user||{},stats=data?.stats||{};
@@ -379,7 +394,7 @@ async function renderUser(a){
 }
 
 document.addEventListener("click",event=>{
-  const s=event.target.closest("[data-show]");if(s){show(s.dataset.show);return}
+  const s=event.target.closest("[data-show]");if(s){show(s.dataset.show);if(s.dataset.show==="rank")loadLeaderboard();return}
   const t=event.target.closest("[data-trip-id]");if(t){detail(t.dataset.tripId);return}
   const b=event.target.closest("[data-breakdown]");if(b)breakdown(b.dataset.breakdown);
 });
