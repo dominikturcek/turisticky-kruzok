@@ -360,9 +360,12 @@
 
     <div class="footerContact"><b>Vedúci krúžku: Dominik Turček</b><a href="mailto:dominikturcek@gmail.com">dominikturcek@gmail.com</a><a href="tel:+421902286946">0902 286 946</a><a href="https://wa.me/421902286946" target="_blank" rel="noopener">WhatsApp</a></div>
 
-    <a href="/turisticky-kruzok/pas/">
-      Turistický pas →
-    </a>
+    <div style="display:flex;align-items:center;gap:16px;flex-wrap:wrap">
+      <span id="visitCounter" style="font-size:12px;opacity:.65" hidden></span>
+      <a href="/turisticky-kruzok/pas/">
+        Turistický pas →
+      </a>
+    </div>
 
   </div>
 
@@ -410,6 +413,23 @@ if ("serviceWorker" in navigator) {
       .catch(err => console.error("Service worker registration failed:", err));
   });
 }
+</script>
+<script>
+fetch("https://turisticky-kruzok-api.dominikturcek.workers.dev/api/public/visit", {
+  method: "POST",
+  cache: "no-store"
+})
+  .then(response => {
+    if (!response.ok) throw new Error("Počítadlo návštev nie je dostupné.");
+    return response.json();
+  })
+  .then(data => {
+    const counter = document.getElementById("visitCounter");
+    if (!counter || !Number.isFinite(Number(data.visits))) return;
+    counter.textContent = `👣 Návštevy: ${Number(data.visits).toLocaleString("sk-SK")}`;
+    counter.hidden = false;
+  })
+  .catch(() => {});
 </script>
 <script>
 (function(){
