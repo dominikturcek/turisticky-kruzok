@@ -45,6 +45,20 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 .statusbig{display:inline-flex;align-items:center;gap:6px;padding:7px 10px;border-radius:999px;font-size:10px;font-weight:900}.statusbig.done{background:#e5f4ea;color:#176b3a}.statusbig.current{background:#fff1b8;color:#765800}.statusbig.planned{background:#fff5d9;color:#81600a}
 .nav{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:100%;max-width:520px;height:66px;background:#fff;border-top:1px solid var(--line);display:flex;z-index:9}.nav button{width:25%;border:0;background:white;color:#6e7e75;font-size:10px;cursor:pointer}.nav button i{display:block;font-style:normal;font-size:20px}.nav button.on{color:var(--g);font-weight:900}.loading{padding:18px 0;text-align:center;color:var(--muted);font-size:12px}
 
+/* IN-APP QR SCANNER */
+.scanQrButton{width:100%;margin-top:12px;border:2px solid #0f5d31;border-radius:16px;padding:15px 12px;background:linear-gradient(135deg,#196d3b,#279451);color:#fff;font-weight:900;font-size:15px;cursor:pointer;box-shadow:0 5px 14px rgba(21,68,42,.18)}
+.scanQrButton:focus-visible,.qrScannerClose:focus-visible{outline:3px solid #f0b429;outline-offset:3px}
+.qrScannerModal[hidden]{display:none!important}
+.qrScannerModal{position:fixed;inset:0;z-index:50;background:rgba(4,25,14,.94);display:flex;align-items:center;justify-content:center;padding:14px;overflow:auto}
+.qrScannerDialog{width:min(100%,500px);max-height:96dvh;overflow:auto;background:#fff;border-radius:22px;padding:18px;color:var(--ink)}
+.qrScannerHeader{display:flex;justify-content:space-between;align-items:center;gap:12px}
+.qrScannerHeader h2{font-size:19px;margin:0}
+.qrScannerClose{border:0;border-radius:10px;background:#eaf5ee;color:var(--g);font-size:22px;font-weight:bold;cursor:pointer;padding:6px 12px}
+.qrScannerStatus{min-height:36px;color:var(--muted);font-size:12px;margin:12px 0;line-height:1.5}
+.qrScannerStatus.error{color:#a22626;font-weight:700}
+#qrScannerReader{min-height:220px;border-radius:14px;overflow:hidden;background:#eaf5ee}
+#qrScannerReader video{max-width:100%;border-radius:12px}
+.qrScannerHint{font-size:11px;color:var(--muted);line-height:1.5;margin:10px 0 0}
 /* QR CHECK-IN */
 .checkinPanel{display:none;margin-top:13px;border-radius:18px;padding:16px;background:#fff;color:var(--ink);box-shadow:0 10px 28px rgba(0,0,0,.18)}
 .checkinPanel.on{display:block}.checkinTop{display:flex;gap:12px;align-items:flex-start}.checkinIcon{width:48px;height:48px;flex:0 0 48px;border-radius:50%;display:grid;place-items:center;font-size:25px;background:#eaf5ee}
@@ -102,6 +116,7 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <div style="font-weight:800;color:#176b3a;font-size:12px;margin-top:2px">ZŠ Nitrianske Rudno</div>
 <div class="muted">Výlety a informácie krúžku</div>
 <div id="currentTrip"><div class="loading">Načítavam aktuálny výlet...</div></div>
+  <button id="openQrScanner" class="scanQrButton" type="button">📷 Naskenovať QR kód účasti</button>
 <div id="bonusPromo" style="display:none"></div>
 <div class="head"><h2>Všetky výlety</h2><button class="link" data-show="trips">Zobraziť všetky ›</button></div>
 <div id="homeTripList"><div class="loading">Načítavam výlety...</div></div>
@@ -129,11 +144,19 @@ button{font:inherit}.app{max-width:520px;margin:auto;min-height:100vh;background
 <section id="rules" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Pravidlá</h1><div class="box"><h3>Body</h3><p class="muted">Body za výlet sa pripíšu po úspešnom QR check-ine. Každý výlet sa započíta iba raz.</p></div><div class="box"><h3>Kilometre a prevýšenie</h3><p class="muted">Po zaevidovaní účasti sa do pasu automaticky započítajú kilometre, prevýšenie a body daného výletu.</p></div></section>
 <section id="info" class="screen page"><button class="back" data-show="home">‹ Späť</button><h1>Informácie</h1>
 <div class="box"><h3>Turistický pas</h3><p class="muted">Digitálny turistický pas zaznamenáva tvoje absolvované výlety, kilometre, prevýšenie, body, pečiatky a získané odznaky. Pas je prepojený s tvojím školským Microsoft účtom, preto sa prihlasuj vždy svojím vlastným školským účtom.</p></div>
-<div class="box"><h3>📱 Ako sa zapisuje účasť a získavajú body?</h3><p class="muted">Počas výletu dostanú účastníci k dispozícii <b>QR kód</b>. Naskenuj ho mobilným telefónom a otvor Turistický pas. Ak ešte nie si prihlásený, prihlás sa svojím školským Microsoft účtom. Po úspešnom zápise sa ti výlet automaticky pridá do pasu a započítajú sa <b>body, kilometre a prevýšenie</b> daného výletu. Zároveň získaš pečiatku za jeho absolvovanie. Každý výlet sa dá týmto spôsobom započítať iba raz.</p></div>
+<div class="box"><h3>📱 Ako sa zapisuje účasť a získavajú body?</h3><p class="muted">Počas výletu dostanú účastníci k dispozícii <b>QR kód</b>. Otvor Turistický pas a použi tlačidlo <b>Naskenovať QR kód účasti</b>, prípadne naskenuj kód fotoaparátom telefónu. Ak ešte nie si prihlásený, prihlás sa svojím školským Microsoft účtom. Po úspešnom zápise sa ti výlet automaticky pridá do pasu a započítajú sa <b>body, kilometre a prevýšenie</b> daného výletu. Zároveň získaš pečiatku za jeho absolvovanie. Každý výlet sa dá týmto spôsobom započítať iba raz.</p></div>
 <div class="box"><h3>⭐ Bonusové body a odznaky</h3><p class="muted">Niektoré výlety alebo bonusové úlohy môžu priniesť ďalšie body. Odznaky získavaš za splnenie rôznych turistických cieľov – napríklad za počet absolvovaných výletov, prejdené kilometre alebo nastúpané metre. Niektoré mimoriadne odznaky môže udeliť vedúci krúžku.</p></div>
 <div class="box"><h3>⚠️ Keď sa QR kód nepodarí naskenovať</h3><p class="muted">Ak máš počas výletu problém s telefónom, internetom alebo prihlásením, povedz to vedúcemu krúžku. Účasť je možné doplniť aj dodatočne, aby si o absolvovaný výlet a získané body neprišiel.</p></div>
 <div class="box"><h3>Kontakt</h3><p class="muted"><b>Vedúci krúžku: Dominik Turček</b><br><a href="mailto:dominikturcek@gmail.com">dominikturcek@gmail.com</a><br><a href="tel:+421902286946">0902 286 946</a> · <a href="https://wa.me/421902286946" target="_blank" rel="noopener">WhatsApp</a></p></div>
 </section>
+  <div id="qrScannerModal" class="qrScannerModal" hidden role="dialog" aria-modal="true" aria-labelledby="qrScannerTitle">
+    <div class="qrScannerDialog">
+      <div class="qrScannerHeader"><h2 id="qrScannerTitle">📷 Skener účasti</h2><button id="closeQrScanner" class="qrScannerClose" type="button" aria-label="Zatvoriť skener">✕</button></div>
+      <p id="qrScannerStatus" class="qrScannerStatus" role="status">Pripravujem fotoaparát…</p>
+      <div id="qrScannerReader"></div>
+      <p class="qrScannerHint">Namier fotoaparát na QR kód výletu. Pri prvom použití povoľ aplikácii prístup k fotoaparátu. Na zápis účasti je potrebné internetové pripojenie.</p>
+    </div>
+  </div>
 </main>
 
 <nav class="nav">
@@ -160,7 +183,7 @@ await msal.initialize();
 
 let account=null,publicTrips=[],attendedTrips=[],passportData=null;
 const params=new URLSearchParams(location.search);
-const checkinToken=(params.get("checkin")||"").trim();
+let checkinToken=(params.get("checkin")||"").trim();
 let checkinTrip=null;
 let checkinFinished=false;
 
@@ -336,6 +359,115 @@ function renderBonusTasks(tasks){
   box.innerHTML=tasks.map(t=>`<div class="bonusCard"><h3>⭐ ${esc(t.title)} · +${num(t.points)} bodov</h3><div class="muted">${t.trip_name?`Výlet: ${esc(t.trip_name)}<br>`:""}${esc(t.description)}</div>${t.status?`<div class="bonusState">${t.status==="pending"?"⏳ Čaká na vyhodnotenie":t.status==="approved"?`✓ Schválené · +${num(t.awarded_points)} bodov`:"✕ Neschválené"}</div>`:`<textarea id="bonusAnswer${t.id}" placeholder="Napíš odpoveď alebo splnenie úlohy..."></textarea><button type="button" data-bonus-submit="${t.id}">Odoslať úlohu</button>`}</div>`).join("");
   box.querySelectorAll('[data-bonus-submit]').forEach(b=>b.onclick=async()=>{try{const id=Number(b.dataset.bonusSubmit),answer=$("bonusAnswer"+id).value.trim();if(!answer)return alert("Napíš odpoveď.");const tk=await apiToken(account);await privateApiPost(`/api/me/bonus-tasks/${id}/submit`,tk,{answer});await loadPassport(account);alert("Odpoveď bola odoslaná.")}catch(e){alert(e.message)}})
 }
+
+/* QR SKENER: používa rovnaký zápis účasti ako QR odkaz */
+let qrScanner=null,qrScannerStartPromise=null,qrScannerClosePromise=Promise.resolve(),qrScanHandled=false,qrScannerLoadPromise=null,qrScannerGeneration=0;
+const QR_LIBRARY_URL="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js";
+
+function qrStatus(message,isError=false){
+  const node=$("qrScannerStatus");
+  node.textContent=message;
+  node.classList.toggle("error",isError);
+}
+
+function loadQrLibrary(){
+  if(window.Html5Qrcode)return Promise.resolve();
+  if(!qrScannerLoadPromise){
+    qrScannerLoadPromise=new Promise((resolve,reject)=>{
+      const script=document.createElement("script");
+      script.src=QR_LIBRARY_URL;
+      script.async=true;
+      script.onload=()=>window.Html5Qrcode?resolve():reject(new Error("Knižnica skenera sa nenačítala."));
+      script.onerror=()=>reject(new Error("Knižnicu skenera sa nepodarilo stiahnuť. Skontroluj internet."));
+      document.head.appendChild(script);
+    }).catch(e=>{qrScannerLoadPromise=null;throw e});
+  }
+  return qrScannerLoadPromise;
+}
+
+function scannedCheckinToken(qrText){
+  let url;
+  try{url=new URL(String(qrText).trim())}catch{return null}
+  if(url.protocol!=="https:"||url.origin!==new URL(HOME).origin)return null;
+  if(url.pathname!=="/turisticky-kruzok/pas/"&&url.pathname!=="/turisticky-kruzok/pas/index.html")return null;
+  const tokens=url.searchParams.getAll("checkin");
+  if(tokens.length!==1||! /^[a-fA-F0-9]{64}$/.test(tokens[0]))return null;
+  return tokens[0];
+}
+
+function closeQrScanner(){
+  $("qrScannerModal").hidden=true;
+  qrScannerGeneration++;
+  const scanner=qrScanner;
+  const starting=qrScannerStartPromise;
+  qrScanner=null;
+  qrScannerStartPromise=null;
+  qrScannerClosePromise=qrScannerClosePromise.then(async()=>{
+    if(!scanner)return;
+    if(starting){try{await starting}catch{}}
+    try{await scanner.stop()}catch(e){console.warn("QR scanner stop:",e)}
+    try{await scanner.clear()}catch(e){console.warn("QR scanner clear:",e)}
+    $("qrScannerReader").replaceChildren();
+  });
+  return qrScannerClosePromise;
+}
+
+async function acceptQrScan(text){
+  if(qrScanHandled)return;
+  const token=scannedCheckinToken(text);
+  if(!token){qrStatus("Toto nie je QR kód účasti Turistického pasu. Skús iný kód.",true);return}
+  qrScanHandled=true;
+  qrStatus("QR kód bol načítaný. Overujem účasť…");
+  await closeQrScanner();
+  checkinToken=token;
+  checkinTrip=null;
+  checkinFinished=false;
+  history.replaceState({},document.title,`${HOME}?checkin=${encodeURIComponent(token)}`);
+  await prepareCheckin();
+}
+
+async function openQrScanner(){
+  if(!$("qrScannerModal").hidden)return;
+  qrScanHandled=false;
+  const generation=++qrScannerGeneration;
+  $("qrScannerModal").hidden=false;
+  qrStatus("Pripravujem fotoaparát…");
+  await qrScannerClosePromise;
+  if(generation!==qrScannerGeneration)return;
+  $("qrScannerReader").replaceChildren();
+  try{
+    if(!window.isSecureContext||!navigator.mediaDevices?.getUserMedia){
+      throw new Error("Fotoaparát nie je dostupný. Otvor pas cez HTTPS v podporovanom prehliadači.");
+    }
+    await loadQrLibrary();
+    if($("qrScannerModal").hidden||generation!==qrScannerGeneration)return;
+    qrScanner=new window.Html5Qrcode("qrScannerReader",{formatsToSupport:[window.Html5QrcodeSupportedFormats.QR_CODE],verbose:false});
+    qrStatus("Povoľ prístup k fotoaparátu a namier na QR kód výletu.");
+    const startedScanner=qrScanner;
+    qrScannerStartPromise=startedScanner.start({facingMode:"environment"},{fps:10,qrbox:(w,h)=>{const size=Math.max(140,Math.min(w,h,260));return{width:size,height:size}}},
+      decodedText=>{void acceptQrScan(decodedText)},()=>{});
+    await qrScannerStartPromise;
+    if($("qrScannerModal").hidden||generation!==qrScannerGeneration)return;
+    qrStatus("Namier QR kód do vyznačeného štvorca.");
+  }catch(e){
+    console.error("QR scanner:",e);
+    if(!$("qrScannerModal").hidden){
+      const msg=e?.name==="NotAllowedError"?"Prístup ku fotoaparátu bol zamietnutý. Povoľ fotoaparát v nastaveniach aplikácie a skús to znova.":
+        e?.name==="NotFoundError"?"Telefón nenašiel použiteľný fotoaparát.":
+        "Fotoaparát sa nepodarilo spustiť. Skontroluj povolenie fotoaparátu a internetové pripojenie.";
+      qrStatus(e?.message?.startsWith("Knižnic")||e?.message?.startsWith("Fotoaparát nie je")?e.message:msg,true);
+    }
+    if(qrScanner&&generation===qrScannerGeneration){
+      const failed=qrScanner;
+      qrScanner=null;qrScannerStartPromise=null;
+      try{await failed.clear()}catch{}
+    }
+  }
+}
+
+$("openQrScanner").addEventListener("click",()=>{void openQrScanner()});
+$("closeQrScanner").addEventListener("click",()=>{void closeQrScanner()});
+document.addEventListener("keydown",event=>{if(event.key==="Escape"&&!$("qrScannerModal").hidden){void closeQrScanner()}});
 
 /* QR CHECK-IN */
 function setCheckinPanel(kind,title,message,trip=null,buttonText="",buttonFn=null){
